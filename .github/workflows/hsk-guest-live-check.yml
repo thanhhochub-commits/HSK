@@ -1,0 +1,62 @@
+name: HSK 2K guest checkout end-to-end preparation
+on:
+  push:
+    paths:
+      - '.github/workflows/hsk-guest-live-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  guest-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Create exactly one real 2K unpaid payOS order
+        run: |
+          set -euo pipefail
+          chmod 700 /tmp
+          code=$(curl --silent --show-error --connect-timeout 8 --max-time 35 \
+            -o /tmp/hsk_guest.json -w '%{http_code}' \
+            -X POST 'https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-guest-checkout' \
+            -H 'Origin: https://thanhhochub-commits.github.io' \
+            -H 'Content-Type: application/json' \
+            -d '{}')
+          echo "Guest checkout HTTP status: $code"
+          if [ "$code" != "200" ]; then
+            python3 -c 'import json; d=json.load(open("/tmp/hsk_guest.json")); print("Safe error:",d.get("error","unspecified"))'
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json, urllib.parse
+          d=json.load(open('/tmp/hsk_guest.json'))
+          assert d.get('amountVnd') == 2000
+          assert d.get('days') == 1
+          assert isinstance(d.get('orderCode'),int)
+          assert len(d.get('guestToken','')) == 64
+          url=urllib.parse.urlparse(d.get('checkoutUrl',''))
+          assert url.scheme == 'https' and url.hostname.endswith('.payos.vn')
+          print('PASS: Unique payOS 2K link, guest secret and 24h trial contract confirmed')
+          print('No payment was made. Guest URL and token are intentionally redacted.')
+          PY
+      - name: Check guest trial is pending and cannot auto-unlock
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,urllib.request
+          created=json.load(open('/tmp/hsk_guest.json'))
+          body=json.dumps({
+            'guestToken':created['guestToken'],
+            'orderCode':created['orderCode']
+          }).encode()
+          req=urllib.request.Request(
+            'https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-guest-status',
+            data=body,
+            headers={'Origin':'https://thanhhochub-commits.github.io','Content-Type':'application/json'},
+            method='POST'
+          )
+          with urllib.request.urlopen(req,timeout=25) as response:
+            assert response.status==200
+            d=json.loads(response.read())
+          assert d['status']=='pending' and d['proActive'] is False
+          print('PASS: unpaid link remains pending; no Pro access granted')
+          PY

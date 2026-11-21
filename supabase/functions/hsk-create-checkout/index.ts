@@ -28,9 +28,9 @@ function adminClient() {
   });
 }
 function payos() {
-  const clientId = Deno.env.get("PAYOS_CLIENT_ID");
-  const apiKey = Deno.env.get("PAYOS_API_KEY");
-  const checksumKey = Deno.env.get("PAYOS_CHECKSUM_KEY");
+  const clientId = Deno.env.get("PAYOS_CLIENT_ID") || Deno.env.get("Client ID");
+  const apiKey = Deno.env.get("PAYOS_API_KEY") || Deno.env.get("Api Key");
+  const checksumKey = Deno.env.get("PAYOS_CHECKSUM_KEY") || Deno.env.get("Checksum Key");
   if (!clientId || !apiKey || !checksumKey) {
     throw Error("payOS credentials are not configured");
   }

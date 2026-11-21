@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   try {
     const envelope = await req.json();
-    const verified = payos().webhooks.verify(envelope);
+    const verified = await payos().webhooks.verify(envelope);
     if (envelope?.success !== true || envelope?.code !== "00") {
       return json({ received: true, granted: false });
     }
@@ -36,7 +36,8 @@ Deno.serve(async (req) => {
     const link = String(verified?.paymentLinkId || "");
     const ref = String(verified?.reference || "");
     if (!Number.isSafeInteger(code) || !Number.isSafeInteger(amount)
-        || amount <= 0 || !link) {
+        || amount <= 0 || !link
+        || verified?.code !== "00" || verified?.currency !== "VND") {
       return json({ received: true, granted: false });
     }
     // A valid signed test webhook with no matching real order grants nothing.

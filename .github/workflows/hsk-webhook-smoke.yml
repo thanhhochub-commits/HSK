@@ -19,3 +19,11 @@ jobs:
           result=$(curl --fail-with-body --location --silent --show-error --connect-timeout 5 --max-time 15 "$url")
           echo "$result"
           echo "$result" | grep -q '"credentialsConfigured":true'
+
+      - name: Reject unsigned payment notification
+        run: |
+          set -euo pipefail
+          url="https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-payment-webhook"
+          code=$(curl --silent --show-error --connect-timeout 5 --max-time 15 --output /tmp/hsk-response.json --write-out '%{http_code}' -X POST -H 'content-type: application/json' --data '{"code":"00","success":true,"data":{"orderCode":123,"amount":89000},"signature":"not-valid"}' "$url")
+          echo "Unsigned webhook HTTP status: $code"
+          test "$code" = "401"

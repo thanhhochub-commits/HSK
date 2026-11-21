@@ -27,3 +27,23 @@ jobs:
           code=$(curl --silent --show-error --connect-timeout 5 --max-time 15 --output /tmp/hsk-response.json --write-out '%{http_code}' -X POST -H 'content-type: application/json' --data '{"code":"00","success":true,"data":{"orderCode":123,"amount":89000},"signature":"not-valid"}' "$url")
           echo "Unsigned webhook HTTP status: $code"
           test "$code" = "401"
+
+      - name: Prove anonymous users cannot create payment links
+        run: |
+          set -euo pipefail
+          url="https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-create-checkout"
+          code=$(curl --silent --show-error --connect-timeout 5 --max-time 15 --output /tmp/hsk-checkout.json --write-out '%{http_code}' -X POST -H 'content-type: application/json' --data '{"planCode":"owner_test"}' "$url")
+          echo "Checkout without login HTTP $code"
+          test "$code" = "401"
+      - name: Prove anonymous users cannot check another person's payment
+        run: |
+          set -euo pipefail
+          url="https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-payment-status"
+          code=$(curl --silent --show-error --connect-timeout 5 --max-time 15 --output /tmp/hsk-status.json --write-out '%{http_code}' -X POST -H 'content-type: application/json' --data '{"orderCode":123}' "$url")
+          echo "Payment status without login HTTP $code"
+          test "$code" = "401"
+      - name: Check the public HSK checkout version
+        run: |
+          set -euo pipefail
+          html=$(curl --fail-with-body --silent --show-error --connect-timeout 5 --max-time 15 'https://thanhhochub-commits.github.io/HSK/')
+          echo "$html" | grep -q 'hsk-billing-v16-1.js'

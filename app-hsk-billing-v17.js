@@ -210,20 +210,20 @@ function progressPage(){var active=Object.keys(state.activity).filter(function(d
 var PRICES={30:{label:"30 ngày",money:89000},90:{label:"90 ngày",money:219000},365:{label:"365 ngày",money:699000}};
 function money(n){return Number(n).toLocaleString("vi-VN")+"đ";}
 function proPage(){
- var b=billingInfo(),freePerks="✓ 1 bài đầu tiên trong mỗi kỹ năng<br>✓ Có thể học lại bài miễn phí<br>✓ Chưa cần đăng ký để học thử";
+ var b=billingInfo();
  var cards=Object.keys(PRICES).map(function(k){
-   var p=PRICES[k];
-   return '<div class="panel pro-plan '+(k==="90"?"best":"")+'"><span class="pill">HSK Panda Pro</span><h3>Pro '+p.label+'</h3><div class="pro-price">'+money(p.money)+'</div>'
-   +'<p>Giá dự kiến, chưa mở bán chính thức</p><div class="pro-checks">✓ Nội dung Pro khi phát hành<br>✓ Luyện thi nâng cao<br>✓ Gia hạn tự động quyền học sau khi thanh toán được xác minh</div>'
-   +button((b.live?"Chọn gói":"Xem thông tin gói")+" "+ic("arrow"),"choosePlan",'data-id="'+k+'"',"full "+(k==="90"?"":"secondary"))+'</div>';
+  var item=PRICES[k];
+  return '<div class="panel pro-plan"><span class="pill">Sắp ra mắt</span><h3>HSK Pro '+item.label+'</h3><div class="pro-price">'+money(item.money)+'</div><p>Giá tham khảo, hiện chưa mở bán.</p><div class="pro-checks">✓ Toàn bộ lộ trình khi hoàn thiện<br>✓ Nội dung nâng cao<br>✓ Mở khóa theo tài khoản khi triển khai chính thức</div><div class="pay-status">Chưa mở bán gói này</div></div>';
  }).join("");
- return head("HSK Panda Premium 🐼","Giữ nguyên giao diện HSK Panda. Một bài đầu tiên ở mỗi phần miễn phí; Pro mở nội dung nâng cao.")
- +'<section class="pro-hero"><div><span class="pill">Học thử miễn phí</span><h2>Tiến bộ mỗi ngày<br>cùng HSK Panda</h2><p>Học bài mẫu trước khi quyết định nâng cấp.</p></div><div class="pro-panda">'+panda()+'</div></section>'
- +(b.pro?'<div class="notice">✓ Pro trên trình duyệt của bạn có hiệu lực đến '+esc(new Date(b.expiresAt).toLocaleDateString("vi-VN"))+'.</div>':'')
- +'<div class="notice" style="margin-top:18px"><b>Gói thử Pro 2.000đ/24 giờ:</b> Không cần đăng nhập; payOS xác nhận thanh toán sẽ tự mở khóa trên trình duyệt này. '+button("Thử Pro chỉ 2.000đ","nav",'data-to="checkout"',"")+'</div>'
- +'<h2 class="pro-subtitle">Các gói dài hạn (chưa mở bán)</h2><div class="pro-grid"><div class="panel pro-plan"><span class="pill">Bắt đầu</span><h3>FREE</h3><div class="pro-price">0đ</div><p>Không thu phí</p><div class="pro-checks">'+freePerks+'</div>'+button("Học miễn phí","nav",'data-to="home"',"secondary full")+'</div>'+cards+'</div>'
- +(!b.live?'<div class="notice warning"><b>Chưa mở thanh toán:</b> Giấy phép Pro chỉ được cấp sau khi webhook payOS và quyền truy cập Supabase được kiểm chứng. Không chuyển tiền qua QR tĩnh trước đây.</div>':'');
+ return head("HSK Panda Premium 🐼","Trải nghiệm miễn phí bài đầu tiên hoặc thử Pro 24 giờ với giá 2.000đ.")
+ +'<section class="pro-hero"><div><span class="pill">Học thử trước khi quyết định</span><h2>Chinh phục HSK mỗi ngày<br>cùng gấu trúc Panda</h2><p>Giao diện học cũ được giữ nguyên. Trải nghiệm nhanh và tự động.</p></div><div class="pro-panda">'+panda()+'</div></section>'
+ +(b.pro?'<div class="notice">✓ Bạn đang có quyền Pro đến '+esc(new Date(b.expiresAt).toLocaleString("vi-VN"))+'.</div>':'')
+ +'<div class="notice" style="margin:19px 0"><b>Gói duy nhất đang thử nghiệm:</b> Pro 24 giờ, giá 2.000đ. Không cần đăng nhập. Thanh toán QR payOS và chỉ mở sau khi hệ thống xác nhận. '+button("Thử Pro 2.000đ","nav",'data-to="checkout"',"")+'</div>'
+ +'<h2 class="pro-subtitle">Các lựa chọn khác</h2>'
+ +'<div class="pro-grid"><div class="panel pro-plan"><span class="pill">Học cơ bản</span><h3>FREE</h3><div class="pro-price">0đ</div><p>Không có thời hạn</p><div class="pro-checks">✓ Bài đầu mỗi phần học<br>✓ Ôn tập cơ bản<br>✓ Không cần đăng nhập</div>'+button("Học miễn phí","nav",'data-to="home"',"secondary full")+'</div>'+cards+'</div>'
+ +'<div class="notice warning">Gói thử 2.000đ dùng trên trình duyệt đã mua, không thay thế gói chính thức liên kết với tài khoản.</div>';
 }
+
 function checkoutPage(){
  var b=billingInfo(),active=b.guestPro||b.pro,p=b.lastPayment;
  return head("Thử HSK Pro chỉ 2.000đ 🐼","Không cần đăng nhập. QR do payOS tạo cho riêng giao dịch 2.000đ.")

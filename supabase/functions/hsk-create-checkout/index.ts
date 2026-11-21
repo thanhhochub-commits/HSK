@@ -20,7 +20,9 @@ const respond = (value: unknown, status = 200) =>
   new Response(JSON.stringify(value), { status, headers: cors });
 
 function adminClient() {
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const key = (Deno.env.get("SUPABASE_SECRET_KEYS")
+    ? JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") || "{}").default
+    : Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
   const url = Deno.env.get("SUPABASE_URL");
   if (!url || !key) throw Error("Supabase secret configuration is missing");
   return createClient(url, key, {
@@ -90,8 +92,8 @@ Deno.serve(async (req) => {
       amount: plan.amount,
       description: "HSK " + String(orderCode).slice(-8),
       items: [{ name: plan.label, quantity: 1, price: plan.amount }],
-      cancelUrl: SITE_URL + "?hsk_payment=cancel#payment-status",
-      returnUrl: SITE_URL + "?hsk_payment=return#payment-status",
+      cancelUrl: SITE_URL + "?hsk_payment=cancel",
+      returnUrl: SITE_URL + "?hsk_payment=return",
     });
     if (!link?.checkoutUrl || !link?.paymentLinkId) {
       throw Error("payOS did not return a complete payment link");

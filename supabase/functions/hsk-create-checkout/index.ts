@@ -44,10 +44,7 @@ function orderNumber(): number {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("", { headers: cors });
   if (req.method !== "POST") return respond({ error: "Method not allowed" }, 405);
-  // Fail closed: never collect payments merely because a page has a button.
-  if (Deno.env.get("PAYMENTS_ENABLED") !== "true") {
-    return respond({ error: "HSK Panda has not opened paid checkout yet" }, 503);
-  }
+  // Public purchase remains disabled until the owner verifies a real payment.
   const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
   if (!token) return respond({ error: "Please sign in first" }, 401);
   let orderCode: number | null = null;
@@ -55,11 +52,28 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
     const planCode = String(body?.planCode || "");
-    const plan = PLANS[planCode];
-    if (!plan) return respond({ error: "Unknown plan" }, 400);
+    const requestedTest = planCode === "owner_test";
     db = adminClient();
     const { data: identity, error: authError } = await db.auth.getUser(token);
     if (authError || !identity.user) return respond({ error: "Session expired" }, 401);
+
+    // Only the verified website owner can generate a 2,000 VND trial payment.
+    // This does not enable public payments.
+    const ownerEmail = "thanhhochub@gmail.com";
+    const isVerifiedOwner = (
+      identity.user.email?.trim().toLowerCase() === ownerEmail &&
+      Boolean(identity.user.email_confirmed_at)
+    );
+    if (requestedTest && !isVerifiedOwner) {
+      return respond({ error: "Owner verification required for checkout test" }, 403);
+    }
+    if (!requestedTest && Deno.env.get("PAYMENTS_ENABLED") !== "true") {
+      return respond({ error: "Public checkout is not yet enabled" }, 503);
+    }
+    const plan = requestedTest
+      ? { amount: 2000, label: "HSK Panda kiem thu thanh toan" }
+      : PLANS[planCode];
+    if (!plan) return respond({ error: "Unknown plan" }, 400);
 
     orderCode = orderNumber();
     const { error: insertError } = await db.from("hsk_orders").insert({
@@ -84,14 +98,17 @@ Deno.serve(async (req) => {
     }
     const { error: saveError } = await db.from("hsk_orders").update({
       payment_link_id: link.paymentLinkId,
-    }).eq("order_code", orderCode).eq("user_id", identity.user.id);
+    }).eq("order_code", orderCode).eq("user_id", identity.user.id).eq("status", "pending");
     if (saveError) {
       // Do not hand out an untracked payment URL.
       try { await payos().paymentRequests.cancel(link.paymentLinkId); }
       catch (_) { /* cancellation may not be available; record and investigate */ }
       throw saveError;
     }
-    return respond({ orderCode, checkoutUrl: link.checkoutUrl });
+    return respond({
+      orderCode, checkoutUrl: link.checkoutUrl,
+      isOwnerTest: requestedTest, amountVnd: plan.amount,
+    });
   } catch (e) {
     if (db && orderCode) {
       await db.from("hsk_orders").update({ status: "cancelled" })

@@ -72,7 +72,24 @@ Deno.serve(async (req) => {
       if (guest.error) throw guest.error;
       guestGranted = guest.data === true;
     }
-    return json({ received: true, granted: data === true || guestGranted });
+    // Commercial browser-based subscriptions use the same signed payOS event.
+    // The RPC checks exact server price, order code, and payment link ID.
+    let planGranted = false;
+    if (data !== true && !guestGranted &&
+        [89000,219000,699000].includes(amount)) {
+      const plan = await service().rpc("hsk_apply_verified_guest_subscription", {
+        p_order_code: code,
+        p_amount_vnd: amount,
+        p_payment_link_id: link,
+        p_reference: ref,
+      });
+      if (plan.error) throw plan.error;
+      planGranted = plan.data === true;
+    }
+    return json({
+      received: true,
+      granted: data === true || guestGranted || planGranted,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("hsk-payOS-webhook", message);

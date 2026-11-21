@@ -1,0 +1,58 @@
+name: HSK Pro 30-90-365 unpaid checkout tests
+on:
+  push:
+    paths:
+      - '.github/workflows/hsk-paid-plans-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  paid-plans:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Verify three real payOS links without transferring money
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          for row in pro_30:89000:30 pro_90:219000:90 pro_365:699000:365; do
+            IFS=: read -r plan price days <<< "$row"
+            echo "Testing plan: $plan"
+            status=$(curl --silent --show-error --connect-timeout 8 --max-time 35 \
+              -o /tmp/hsk_payment.json -w '%{http_code}' \
+              -H 'Origin: https://thanhhochub-commits.github.io' \
+              -H 'Content-Type: application/json' \
+              -X POST -d "{\"planCode\":\"$plan\"}" \
+              'https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-plan-checkout')
+            echo "Checkout HTTP: $status"
+            if [ "$status" != "200" ]; then
+              python3 -c 'import json; d=json.load(open("/tmp/hsk_payment.json")); print("Safe error:",d.get("error","unknown"))'
+              exit 1
+            fi
+            EXPECTED_PLAN="$plan" EXPECTED_PRICE="$price" EXPECTED_DAYS="$days" python3 - <<'PY'
+          import os,json,urllib.parse,urllib.request
+          p=json.load(open('/tmp/hsk_payment.json'))
+          assert p.get('planCode')==os.environ['EXPECTED_PLAN']
+          assert p.get('amountVnd')==int(os.environ['EXPECTED_PRICE'])
+          assert p.get('days')==int(os.environ['EXPECTED_DAYS'])
+          assert isinstance(p.get('orderCode'),int)
+          assert len(p.get('guestToken',''))==64
+          url=urllib.parse.urlparse(p['checkoutUrl'])
+          assert url.scheme=='https' and url.hostname.endswith('.payos.vn')
+          req=urllib.request.Request(
+            'https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-plan-status',
+            data=json.dumps({'guestToken':p['guestToken']}).encode(),
+            headers={'Origin':'https://thanhhochub-commits.github.io',
+                     'Content-Type':'application/json'},
+            method='POST')
+          with urllib.request.urlopen(req,timeout=28) as response:
+            assert response.status==200
+            state=json.loads(response.read())
+          assert state.get('status')=='pending'
+          assert state.get('proActive') is False
+          assert state.get('amountVnd')==int(os.environ['EXPECTED_PRICE'])
+          print('PASS:',os.environ['EXPECTED_PLAN'], 'signed-amount link created and unpaid Pro denied')
+          print('No payment made. Token and checkout link withheld.')
+          PY
+          done

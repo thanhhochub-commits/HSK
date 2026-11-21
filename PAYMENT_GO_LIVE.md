@@ -1,47 +1,54 @@
-# HSK Panda — Quy trình bật thanh toán tự động
+# HSK Panda — thanh toán payOS, bản 1.8.1
 
-**Trạng thái:** Website v1.4 đã cập nhật lên GitHub, mã Edge Functions đã lưu trong repo. Chưa có bằng chứng backend đã triển khai hoặc tiền đã được nhận/xác minh. Không bật thu tiền trước kiểm thử.
+Website gốc: https://thanhhochub-commits.github.io/HSK/
+Trang gói: https://thanhhochub-commits.github.io/HSK/#pro
 
-## A. Supabase Auth
-1. Authentication → URL Configuration: Site URL = https://thanhhochub-commits.github.io/HSK/; thêm Redirect URL phù hợp cho đường dẫn này.
-2. Bật Email OTP/magic link để học viên đăng nhập. Google chỉ khả dụng sau khi thiết lập OAuth Client ID/Secret trong Supabase.
-3. Project Settings → API Keys: sao chép PUBLIC Publishable Key có tiền tố sb_publishable_.
-4. Mở file billing-config.js trên GitHub, điền supabasePublishableKey. Không đưa khóa payOS, service_role hoặc mật khẩu DB lên GitHub.
-5. Giữ paymentsEnabled=false khi chưa kiểm thử thực tế.
+## Đã triển khai
 
-## B. Database
-Vào HSK Supabase SQL Editor và chạy nội dung file supabase/hsk_payment_schema.sql.
-Xác minh hsk_orders, hsk_access đều bật RLS; authenticated chỉ xem dữ liệu thuộc tài khoản mình, không được tự đổi quyền Pro.
-Chỉ service_role được EXECUTE hsk_apply_verified_payment.
+- **Free:** một bài trải nghiệm ở mỗi mục.
+- **Pro 30 ngày:** 89.000đ, plan_code `pro_30`.
+- **Pro 90 ngày:** 219.000đ, plan_code `pro_90`.
+- **Pro 365 ngày:** 699.000đ, plan_code `pro_365`.
+- Không cần đăng nhập: trình duyệt giữ token ngẫu nhiên 256-bit trong localStorage.
+- QR/link thanh toán tạo bằng API payOS trên Supabase Edge Function, không dùng QR tĩnh.
+- Chỉ Supabase service role xác minh giao dịch mới có thể kích hoạt gói.
+- Webhook ký số + đối soát server-to-server với payOS, kiểm tra mã đơn, số tiền và paymentLinkId.
+- Gia hạn tự cộng thời gian còn lại. Thông báo webhook trùng không cộng ngày 2 lần.
+- Mã khôi phục bí mật có thể sao chép trên trình duyệt đã thanh toán và nhập lại trên thiết bị khác.
 
-## C. Edge Functions
-Deploy source các hàm:
-- supabase/functions/hsk-create-checkout/index.ts (xác thực user)
-- supabase/functions/hsk-payment-status/index.ts (xác thực user)
-- supabase/functions/hsk-payment-webhook/index.ts (tắt Verify JWT CHỈ đối với hàm này; kiểm tra chữ ký PayOS bằng SDK chính thức)
-Secrets cần được lưu ở Supabase: PAYOS_CLIENT_ID, PAYOS_API_KEY, PAYOS_CHECKSUM_KEY (bạn đã xác nhận lưu). SUPABASE_SERVICE_ROLE_KEY phải chỉ dùng bên trong Edge Functions.
-Giữ secret PAYMENTS_ENABLED=false cho đến khi toàn bộ giao dịch thử thành công.
+## Bảo toàn giao dịch thử
 
-## D. Webhook URL
-Chỉ sau khi triển khai hsk-payment-webhook thành công, hãy cấu hình URL sau trong payOS → HSK Panda → Webhook:
-https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-payment-webhook
-payOS có thể gửi payload thử nghiệm, hàm sẽ không mở Pro với order không khớp.
+Gói 2.000đ **đã ngừng bán** ở cả giao diện và hai checkout API trước đây. Giao dịch thử đã thanh toán trước đó vẫn được giữ trong `hsk_guest_trials`, được kiểm tra qua `hsk-guest-status` và `hsk-plan-status` đến lúc hết hạn. Không xóa hàng cũ.
 
-## E. Kiểm thử trước khi nhận tiền
-- Đăng nhập user thật, chỉ thấy đơn hàng của chính mình.
-- Không có PAYMENTS_ENABLED=true thì backend không phát sinh QR.
-- Sai signature, sai số tiền, sai orderCode, sai paymentLinkId => không cấp Pro.
-- Gửi webhook trùng => gia hạn một lần duy nhất.
-- Thanh toán được nhà cung cấp xác nhận => orders.status=paid và access.expires_at đúng.
-- Sau reload hoặc đổi thiết bị, tài khoản cùng user vẫn có quyền Pro.
-- Có phương án xử lý webhook chậm, hoàn tiền và hết hạn gói.
+## Backend
 
-## F. Lưu ý thương mại
-Giá trong code là ví dụ chưa chốt: 30 ngày 89.000đ, 90 ngày 219.000đ, 365 ngày 699.000đ. Phải chốt với chủ dự án và cập nhật đồng nhất frontend, Edge Functions và SQL trước khi cho phép thu.
-Dữ liệu bài học trong JavaScript công khai chưa phải tài nguyên Pro được bảo vệ tại backend. Trước khi mở bán, cần chuyển bài học Pro ra hệ thống có xác thực quyền truy cập và kiểm thử khóa bài.
-GitHub Pages không phù hợp làm hosting thương mại SaaS. Chuyển frontend thương mại sang Cloudflare Pages Free khi mở bán, giữ mã nguồn GitHub.
-Chủ dự án muốn ngân sách 0đ: kiểm soát hạn mức miễn phí, không bật tự nâng cấp gói trả phí, theo dõi chi phí AI và tài nguyên Supabase.
+- SQL: `supabase/hsk_paid_plans.sql`
+- Tạo đơn: `supabase/functions/hsk-plan-checkout/index.ts`
+- Kiểm tra trạng thái: `supabase/functions/hsk-plan-status/index.ts`
+- Webhook: `supabase/functions/hsk-payment-webhook/index.ts`
+- Bảng đơn: `public.hsk_guest_subscriptions`
+- Cấp quyền: `public.hsk_apply_verified_guest_subscription(...)`; EXECUTE chỉ dành cho service_role.
 
-## Link
-Website: https://thanhhochub-commits.github.io/HSK/
-Repository: https://github.com/thanhhochub-commits/HSK
+Mỗi lần sửa giá phải cập nhật đồng thời SQL constraints + reserve RPC, Edge Function giá server, JavaScript bảng giá và tài liệu. Không đọc giá tiền từ trình duyệt.
+
+## Kiểm thử đã thực hiện
+
+1. **Giao dịch thử thật 2.000đ:** payOS thông báo thành công, webhook ký số được ghi nhận, Supabase cập nhật quyền 24 giờ, website hiện "Đã mở khóa".
+2. **Cả 3 gói mới:** tạo link payOS đúng số tiền thực, các đơn mới chưa trả đều là pending và không được cấp Pro. GitHub Actions: `hsk-paid-plans-check.yml`.
+3. **SQL rollback unit test:** sai số tiền / paymentLinkId không cấp Pro, replay webhook không cộng ngày lần hai, mua 30 ngày rồi 90 ngày cộng dồn đúng.
+4. **Retired endpoints:** checkout gói 2.000đ trả 410; webhook giả chữ ký trả 401, không cấp Pro.
+5. **Giao diện:** kiểm tra các trang Home, Pro, Checkout, Payment Status, phục hồi mã, kiểm tra bài tập vẫn chạy.
+6. **Chưa có** giao dịch có tiền thật trên từng gói 89.000 / 219.000 / 699.000; do đó chưa thể tuyên bố cả 3 giao dịch đã được kiểm chứng đầu-cuối bằng tiền thật.
+
+## Vận hành miễn phí
+
+Checkout áp giới hạn **75 đơn/24 giờ trên toàn hệ thống** và **3 đơn/24 giờ với cùng mã trình duyệt**, để hạn chế lạm dụng/hết lượt miễn phí. Giới hạn có thể thay đổi khi nâng cấp hạ tầng. Theo dõi quota payOS và Supabase thường xuyên.
+
+## Cảnh báo cần giải quyết cho kinh doanh quy mô lớn
+
+- **Không có đăng nhập bắt buộc** có nghĩa là người học giữ mã khôi phục như mật khẩu. Nếu xóa bộ nhớ và mất mã, không thể tự động chứng minh mình sở hữu gói trả tiền. Cần chính sách hỗ trợ và có thể tích hợp đăng nhập tùy chọn.
+- Nội dung bài Pro hiện chủ yếu nằm trong mã JavaScript frontend công khai. Dù các quyền Pro được xác minh ở backend, **dữ liệu bài học chưa có bảo vệ server-side đầy đủ**; đây chưa phải mô hình bảo vệ nội dung trả phí chống sao chép chắc chắn.
+- Quy trình hoàn tiền, báo mất mã, hóa đơn và hỗ trợ khách vẫn cần quy định/triển khai riêng.
+- GitHub Pages / Supabase Free / payOS có giới hạn và điều khoản sử dụng; ngân sách bằng 0 chỉ khả thi khi ở trong hạn mức của từng dịch vụ.
+- Không đưa API Key payOS, service-role, khóa bí mật vào mã GitHub hoặc tin nhắn.
+

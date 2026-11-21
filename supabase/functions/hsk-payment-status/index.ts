@@ -37,8 +37,8 @@ Deno.serve(async (req) => {
     if (!order) return respond({ error: "Order not found" }, 404);
 
     if (order.status === "pending" && order.payment_link_id) {
-      const id = Deno.env.get("PAYOS_CLIENT_ID") || "";
-      const key = Deno.env.get("PAYOS_API_KEY") || "";
+      const id = Deno.env.get("PAYOS_CLIENT_ID") || Deno.env.get("Client ID") || "";
+      const key = Deno.env.get("PAYOS_API_KEY") || Deno.env.get("Api Key") || "";
       if (id && key) {
         const response = await fetch(
           "https://api-merchant.payos.vn/v2/payment-requests/" +

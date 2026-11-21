@@ -15,10 +15,10 @@ jobs:
         run: |
           set -euo pipefail
           page=$(curl --silent --show-error --fail-with-body --connect-timeout 8 --max-time 20 'https://thanhhochub-commits.github.io/HSK/')
-          echo "$page" | grep -q 'hsk-pro-30-90-365-v1.8'
-          echo "$page" | grep -q 'app-hsk-billing-v18.js'
-          echo "$page" | grep -q 'hsk-billing-v18.js'
-          for name in app-hsk-billing-v18.js hsk-billing-v18.js; do
+          echo "$page" | grep -q 'hsk-pro-30-90-365-v1.8.1'
+          echo "$page" | grep -q 'app-hsk-billing-v18-1.js'
+          echo "$page" | grep -q 'hsk-billing-v18-1.js'
+          for name in app-hsk-billing-v18-1.js hsk-billing-v18-1.js; do
             curl --silent --show-error --fail-with-body --connect-timeout 8 --max-time 20 \
               "https://thanhhochub-commits.github.io/HSK/$name" -o /dev/null
           done

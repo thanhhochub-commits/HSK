@@ -6,7 +6,7 @@ Website học tiếng Trung và luyện HSK có giao diện hiện đại, tập
 
 **https://thanhhochub-commits.github.io/HSK/**
 
-> Link chỉ hoạt động sau khi chủ repository bật Settings → Pages → Build and deployment → GitHub Actions và workflow Deploy HSK Panda chạy thành công.
+> Website đang triển khai bằng GitHub Pages từ nhánh `main` (GitHub Pages build mặc định). Giữ nguyên địa chỉ trên khi cập nhật mã nguồn.
 
 ## Chức năng hiện có
 
@@ -16,7 +16,7 @@ Website học tiếng Trung và luyện HSK có giao diện hiện đại, tập
 - Phát âm qua SpeechSynthesis, nghe chép chính tả, hỗ trợ shadowing.
 - Nhận diện lời nói cơ bản trên trình duyệt hỗ trợ (không chấm thanh điệu).
 - Bảng viết chữ Hán bằng chuột hoặc cảm ứng.
-- Ngữ pháp, mini quiz, luyện đề 10 câu, sổ lỗi sai.
+- Ngữ pháp, mini quiz và luyện đề 10 câu: **chọn câu trả lời là biết đúng/sai ngay**, hiện đáp án đúng, giải thích và sổ lỗi sai. Mỗi câu chỉ được chấm một lần.
 - Game ghép cặp, XP, streak, dashboard, xuất/nhập dữ liệu.
 - Giao diện thích nghi desktop và điện thoại.
 
@@ -31,8 +31,8 @@ Website học tiếng Trung và luyện HSK có giao diện hiện đại, tập
 ## Cách xuất bản bằng GitHub Pages (giữ nguyên link)
 
 1. Vào **Settings → Pages** trong repository này.
-2. Mục **Build and deployment → Source**: chọn **GitHub Actions**.
-3. Vào tab **Actions**, kiểm tra workflow **Deploy HSK Panda to GitHub Pages** hoặc chạy lại bằng nút **Run workflow**.
+2. Mục **Build and deployment → Source**: chọn **Deploy from a branch** (nhánh `main`, thư mục `/ (root)`).
+3. Vào tab **Actions**, kiểm tra job mặc định **pages build and deployment** chạy thành công sau mỗi lần cập nhật.
 4. Khi trạng thái workflow thành công, mở **https://thanhhochub-commits.github.io/HSK/**.
 
 Bạn cũng có thể chạy thử bằng `python3 -m http.server 8000` ở thư mục này, sau đó mở `http://localhost:8000`.
@@ -47,4 +47,4 @@ Bạn cũng có thể chạy thử bằng `python3 -m http.server 8000` ở thư
 - `styles.css`: giao diện responsive
 - `app.js`: logic học và dữ liệu mẫu
 - `favicon.svg`: icon gấu trúc
-- `.github/workflows/pages.yml`: cấu hình GitHub Pages
+- GitHub Pages tự triển khai mã nguồn từ nhánh `main` (không cần workflow tùy chỉnh).

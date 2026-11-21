@@ -59,7 +59,20 @@ Deno.serve(async (req) => {
       p_reference: ref,
     });
     if (error) throw error;
-    return json({ received: true, granted: data === true });
+    // If it is not a registered account payment, check the 2k guest trial.
+    // Both RPCs verify order code, exact amount and payment link id.
+    let guestGranted = false;
+    if (data !== true && amount === 2000) {
+      const guest = await service().rpc("hsk_apply_verified_guest_trial", {
+        p_order_code: code,
+        p_amount_vnd: amount,
+        p_payment_link_id: link,
+        p_reference: ref,
+      });
+      if (guest.error) throw guest.error;
+      guestGranted = guest.data === true;
+    }
+    return json({ received: true, granted: data === true || guestGranted });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("hsk-payOS-webhook", message);

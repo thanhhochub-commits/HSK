@@ -102,6 +102,9 @@ BEGIN
   END IF;
 
   CASE o.plan_code
+    WHEN 'owner_test' THEN
+      days_for_plan := 1;
+      IF o.amount_vnd <> 2000 THEN RETURN FALSE; END IF;
     WHEN 'pro_30' THEN
       days_for_plan := 30;
       IF o.amount_vnd <> 89000 THEN RETURN FALSE; END IF;

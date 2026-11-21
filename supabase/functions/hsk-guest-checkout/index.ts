@@ -101,7 +101,12 @@ Deno.serve(async (req) => {
       await db.from("hsk_guest_trials").update({ status: "cancelled" })
         .eq("order_code", code).eq("status","pending");
     }
-    console.error("hsk-guest-checkout", e instanceof Error ? e.message : String(e));
+    console.error("hsk-guest-checkout", JSON.stringify({
+      type: e && typeof e === "object" && "name" in e ? String(e.name) : "unknown",
+      message: e && typeof e === "object" && "message" in e ? String(e.message) : String(e),
+      code: e && typeof e === "object" && "code" in e ? String(e.code) : "",
+      status: e && typeof e === "object" && "status" in e ? Number(e.status) : null,
+    }));
     return respond({ error: "Không tạo được QR lúc này, vui lòng thử lại sau." }, 503);
   }
 });

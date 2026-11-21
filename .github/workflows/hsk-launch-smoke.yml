@@ -1,0 +1,47 @@
+name: HSK Pro v1.8 launch smoke checks
+on:
+  push:
+    paths:
+      - '.github/workflows/hsk-launch-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Confirm updated public HSK page and scripts
+        run: |
+          set -euo pipefail
+          page=$(curl --silent --show-error --fail-with-body --connect-timeout 8 --max-time 20 'https://thanhhochub-commits.github.io/HSK/')
+          echo "$page" | grep -q 'hsk-pro-30-90-365-v1.8'
+          echo "$page" | grep -q 'app-hsk-billing-v18.js'
+          echo "$page" | grep -q 'hsk-billing-v18.js'
+          for name in app-hsk-billing-v18.js hsk-billing-v18.js; do
+            curl --silent --show-error --fail-with-body --connect-timeout 8 --max-time 20 \
+              "https://thanhhochub-commits.github.io/HSK/$name" -o /dev/null
+          done
+          echo "PASS: v1.8 and both scripts deployed"
+      - name: Verify 2K purchase endpoints are retired
+        run: |
+          set -euo pipefail
+          for fn in hsk-guest-checkout hsk-create-checkout; do
+            code=$(curl --silent --show-error --connect-timeout 8 --max-time 20 \
+              -o /tmp/hsk_retired.json -w '%{http_code}' -X POST \
+              -H 'Origin: https://thanhhochub-commits.github.io' \
+              -H 'Content-Type: application/json' -d '{}' \
+              "https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/$fn")
+            echo "$fn HTTP $code"
+            test "$code" = 410
+          done
+      - name: Reject fake unsigned payOS notification
+        run: |
+          set -euo pipefail
+          code=$(curl --silent --show-error --connect-timeout 8 --max-time 20 \
+            -o /tmp/hsk_forged.json -w '%{http_code}' -X POST \
+            -H 'Content-Type: application/json' \
+            -d '{"code":"00","success":true,"data":{"orderCode":123,"amount":89000},"signature":"forged"}' \
+            'https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-payment-webhook')
+          echo "Fake webhook HTTP $code"
+          test "$code" = 401

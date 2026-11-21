@@ -16,14 +16,23 @@ function service() {
   });
 }
 function payos() {
-  const clientId = Deno.env.get("PAYOS_CLIENT_ID");
-  const apiKey = Deno.env.get("PAYOS_API_KEY");
-  const checksumKey = Deno.env.get("PAYOS_CHECKSUM_KEY");
+  const clientId = Deno.env.get("PAYOS_CLIENT_ID") || Deno.env.get("Client ID");
+  const apiKey = Deno.env.get("PAYOS_API_KEY") || Deno.env.get("Api Key");
+  const checksumKey = Deno.env.get("PAYOS_CHECKSUM_KEY") || Deno.env.get("Checksum Key");
   if (!clientId || !apiKey || !checksumKey) throw Error("Missing payOS credentials");
   return new PayOS({ clientId, apiKey, checksumKey });
 }
 
 Deno.serve(async (req) => {
+  // Non-sensitive readiness check. Never disclose secret values.
+  if (req.method === "GET") {
+    const configured = !!(
+      (Deno.env.get("PAYOS_CLIENT_ID") || Deno.env.get("Client ID")) &&
+      (Deno.env.get("PAYOS_API_KEY") || Deno.env.get("Api Key")) &&
+      (Deno.env.get("PAYOS_CHECKSUM_KEY") || Deno.env.get("Checksum Key"))
+    );
+    return json({ service: "hsk-payment-webhook", credentialsConfigured: configured });
+  }
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   try {
     const envelope = await req.json();

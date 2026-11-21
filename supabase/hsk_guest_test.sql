@@ -78,3 +78,6 @@ GRANT EXECUTE ON FUNCTION public.hsk_reserve_guest_trial(bigint,text)
   TO service_role;
 GRANT EXECUTE ON FUNCTION public.hsk_apply_verified_guest_trial(bigint,integer,text,text)
   TO service_role;
+
+-- Service role alone may read and update guest checkouts.
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.hsk_guest_trials TO service_role;

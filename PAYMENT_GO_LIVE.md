@@ -24,7 +24,7 @@ Giữ secret PAYMENTS_ENABLED=false cho đến khi toàn bộ giao dịch thử 
 
 ## D. Webhook URL
 Chỉ sau khi triển khai hsk-payment-webhook thành công, hãy cấu hình URL sau trong payOS → HSK Panda → Webhook:
-https://ylljdozgrfjtkufobzml.supabase.co/functions/v1/hsk-payment-webhook
+https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-payment-webhook
 payOS có thể gửi payload thử nghiệm, hàm sẽ không mở Pro với order không khớp.
 
 ## E. Kiểm thử trước khi nhận tiền

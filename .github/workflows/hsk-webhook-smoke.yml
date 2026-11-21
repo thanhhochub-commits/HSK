@@ -1,0 +1,21 @@
+name: One-time HSK webhook credential smoke test
+on:
+  push:
+    paths:
+      - '.github/workflows/hsk-webhook-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  webhook-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check Supabase webhook readiness (no secrets)
+        run: |
+          set -euo pipefail
+          url="https://ylljdozgrfjtukfobzml.supabase.co/functions/v1/hsk-payment-webhook"
+          echo "Testing HSK webhook readiness endpoint"
+          result=$(curl --fail-with-body --location --silent --show-error --connect-timeout 5 --max-time 15 "$url")
+          echo "$result"
+          echo "$result" | grep -q '"credentialsConfigured":true'

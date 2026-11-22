@@ -1,4 +1,4 @@
-/* HSK Panda Drive catalog: titles and links only, no copyrighted source content. */
+/* Drive catalog metadata only. Files remain at their original Google Drive URLs. */
 window.HSK_DRIVE_CATALOG = {
   "source": "https://drive.google.com/drive/folders/1hdY3-5-3DlhmEW_7y11qoxaCMoPjR1II",
   "note": "Danh mục liên kết đến tài liệu trong Google Drive. Quyền truy cập và quyền tác giả thuộc nguồn gốc. Không lưu bản sao nội dung PDF trên HSK Panda.",
@@ -321,37 +321,103 @@ window.HSK_DRIVE_CATALOG = {
                   "title": "HSK6",
                   "url": "https://drive.google.com/drive/folders/11dk55NXJ1gmAXrWZG8iO4ztnleuBBwFU",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK 6 下.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/12Hi3x7-_Uw6SIxGkFwbdgn5t0L17XyUV/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 6 上.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1AoFmwIpSVb6Je3IkERSPYENShDPShruH/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK5",
                   "url": "https://drive.google.com/drive/folders/15zx4c1thaMpkuItkMAxbujCYWdSDqrOG",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK 5  上.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1MLPrzqlL01N2J4liOamb06Ea6pec0o1t/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 5 下.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1IbUYUbvq09Jdf9tX8d1HFu3Qf5P9w7xU/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK4",
                   "url": "https://drive.google.com/drive/folders/13H8jsDq1GmrkMTwR5gS56OKqyEmbzkEO",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK 4 上.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1MiWGN4YU6TPYY__X6JJUlSVvXDeNqcvN/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 4 下.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1Xl9-wnElsvrp_jhdubxT4384JVfSOwCI/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK3",
                   "url": "https://drive.google.com/drive/folders/1MQIhcOhHwy5W9Y0cEFD7b2Br33c7alnu",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK 3.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1orTXWi4ktAAjQwGc_lVQTWH8kLyNPvD6/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK2",
                   "url": "https://drive.google.com/drive/folders/1eV7-MJDJllsFjAN6XXVbDpWBYKtmHO6k",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK 2.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1tj9TSxuUjowo1ruEyUeFp9uPLn_NLBLG/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK1",
                   "url": "https://drive.google.com/drive/folders/1tcw_kLFiZiQF-ws1W95vTH27tZoufdpJ",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK 1.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1n9rCQi-xBvckcGACYv40icHP0XO0voDa/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 }
               ]
             },
@@ -365,37 +431,211 @@ window.HSK_DRIVE_CATALOG = {
                   "title": "HSK6",
                   "url": "https://drive.google.com/drive/folders/1AYU8e2QSgsPkKQQsEoJ5it5ErBLVhCor",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK6-BT-T2-DA.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1GC7r0eZghkJ6KyGm_TruYBc9Khs6s957/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK6-BT-T1-DA.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1IvAmLM-gf63xvbYkaDtmJUui7PvgnA0U/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK6-BH-T2-DA.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1vBhCvFr5hAHvAi5VIYF2X5GADnKHkLKe/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 6 Sách bài tập 2.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1wxa5PQwAJ6m3Un3nNj4PZAqjJAqy2dxJ/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 6 Sách bài tập 1.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1D_XQglcW1XTahJcxXbyyjsVI7chzRVwk/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK6-BH-T1-DA.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1FnBNIjqYbe0IwySqcH94TqWm72dWpzY4/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK5",
                   "url": "https://drive.google.com/drive/folders/1vbEuftKmncEQLiMwwrta9m0FQcC6B_8d",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK5-BT2.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1zR5sd9HkuYewdP50pIHf-5p1mmPr3DZw/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK5-BT1.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1wTFZJ4Dp2W4JXtwinBswUtxkNzQ2vdiz/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK5-BH2.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1_GpmzgG6knky84oRzTAY3DOiF_i-x5WH/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK5-BH1.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/13fOiIG-sMYIu8gNSEgo8PsXcaCK_9jvZ/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 5 Sách bài tập 2.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1ket57TBMwAKjIYa1qq4pwDyP_TNoPATk/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 5 Sách bài tập 1.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1YPftt7zYhhAbUeCd4cCIoNTzAiDGm7WV/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK4",
                   "url": "https://drive.google.com/drive/folders/14XuUVUIUQq6hpPlHD9v3kRxZlZcx9Nv0",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK4-2-BT.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1dpmTYZPn06gBlwewnG7T9NIPu6FId4zO/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK4-2-BH.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/11p_MScwzLM48X9y9jLdWfun-PxkAVjME/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "Chuẩn HSK4 下 bài tập.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/14y1RQvft42H3kCScPIEgrlIhuz0IzK5c/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK4-1-BT.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/19RdgoBwc8Gr4pKxQXGj66cVjuMMBsNf0/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK4-1-BH.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1HesCLXrTCdulFFh-rEJ_sz2G3qBN7rlA/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "Chuẩn HSK4 上 bài tập.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/19MnJ-TN1NjrzOjC0mVL51Sp2z0wDoBJz/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK2",
                   "url": "https://drive.google.com/drive/folders/13gexAPMeK0REsOAeIz5ZIwVltBQV-jUu",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK 2 Sách bài tập.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1LnOVQFBzUmOdKbZ9s1z1ApDc-IfvvjYV/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK-2-BT.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1ElZ7CYlAgUndg9NbTrjSR8eakGmOkeQl/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK-2-BH.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1b4-5DStQODXg8zHv3GWRkW3SMrE1YTJU/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK3",
                   "url": "https://drive.google.com/drive/folders/1LgGN1_OGUU1PS1eLg77LKsGO-2c32rBB",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK-3-BT.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1H4Yflg3fF4cVPyNgjmWZq-T_AOvxQTZw/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK-3-BH.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/13mfDXQzCL5ALxmgaQUuXzaOTGUNZTuZ5/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK 3 Sách bài tập.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1XAafg4Mb9eQo-uRgwo_mo55PlnAR950F/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "HSK1",
                   "url": "https://drive.google.com/drive/folders/1K0ygA8lY3pJ7oQQQVboMPnTMaPA609SU",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSK-1-BT.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1ZwsbrSf0YD7GJDEgSH4k43n1lAODrAoo/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK1 Sách bài tập.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/19i6ULeeXpZY_zh8fuz1vWJ6vfqmC_YGJ/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "HSK-1-BH.pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1BPuJ7QW2pRlEKctb0TlraEzsOhB9aD1h/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 }
               ]
             }
@@ -2594,7 +2834,33 @@ window.HSK_DRIVE_CATALOG = {
                   "title": "8, 9, 10",
                   "url": "https://drive.google.com/drive/folders/1J_A5D7FzVp664PT7Rsk7C9WTa06vYIQM",
                   "mime": "application/vnd.google-apps.folder",
-                  "type": "folder"
+                  "type": "folder",
+                  "children": [
+                    {
+                      "title": "HSKK-01,02,08,09,10 (1).pdf",
+                      "mime": "application/pdf",
+                      "url": "https://drive.google.com/file/d/1pFnZ_g211DnlSGdli88vxwtMuvA_5xfU/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "H81210.mp3",
+                      "mime": "audio/mpeg",
+                      "url": "https://drive.google.com/file/d/14udsw-RqgyOs0OXyr7dQDnuMVaSLSXQt/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "H81209.mp3",
+                      "mime": "audio/mpeg",
+                      "url": "https://drive.google.com/file/d/1ieENmPrWSM1ve1vnW7Wxh7bQYczMG6wk/view?usp=drivesdk",
+                      "type": "file"
+                    },
+                    {
+                      "title": "H81208.mp3",
+                      "mime": "audio/mpeg",
+                      "url": "https://drive.google.com/file/d/1XUJQbh0Dps6A_ztq-5ANUeunttlWE9WP/view?usp=drivesdk",
+                      "type": "file"
+                    }
+                  ]
                 },
                 {
                   "title": "H81416 答案.pdf",

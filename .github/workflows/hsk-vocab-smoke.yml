@@ -18,10 +18,10 @@ jobs:
           base="https://thanhhochub-commits.github.io/HSK/"
           for i in $(seq 1 50); do
             curl -fsSL --max-time 20 "$base" -o /tmp/hsk-index.html
-            if grep -q 'hsk-vocab-pdf-integrated-v2.1' /tmp/hsk-index.html; then break; fi
+            if grep -q 'hsk-vocab-pdf-integrated-v2.1.1' /tmp/hsk-index.html; then break; fi
             sleep 5
           done
-          grep -q 'hsk-vocab-pdf-integrated-v2.1' /tmp/hsk-index.html
+          grep -q 'hsk-vocab-pdf-integrated-v2.1.1' /tmp/hsk-index.html
           ! grep -q 'hsk-drive-catalog-v1.js' /tmp/hsk-index.html
           grep -q 'hsk-billing-v18-1.js' /tmp/hsk-index.html
           grep -q 'app-hsk-billing-v21.js' /tmp/hsk-index.html

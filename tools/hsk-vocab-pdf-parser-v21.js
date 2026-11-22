@@ -1,7 +1,7 @@
 (function(){
 "use strict";
 function sanitize(s){return String(s||"").replace(/\u2028|\u2029/g," ").replace(/\s+/g," ").trim();}
-function isPOS(s){return /^(Danh|Động|Tính|Giới|Phó|Lượng|Số|Trợ|Đại|Thán|Hậu|Tiền|Liên|Số lượng|Định|Hình|Từ|động|tính|lượng|giới|phó|trợ|Thành|Quán|Cấu|Chỉ|Loại|Hư)/.test(s);}
+function isPOS(s){return /^(Danh|Động|Tính|Giới|Phó|Lượng|Số|Trợ|Đại|Thán|Hậu|Tiền|Liên|Số lượng|Định|Hình|Từ|động|tính|lượng|giới|phó|trợ)/.test(s);}
 function parse(text,opts){
  var lines=String(text).replace(/\r/g,"").split("\n"),expected=opts.expected,rows=[],row=null,duplicates=[],errors=[];
  for(var i=0;i<lines.length;i++){

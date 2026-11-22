@@ -54,7 +54,7 @@
   var back=document.createElement("div");
   back.className="hsk-v38-back";
   var backCard=document.createElement("div");
-  backCard.className="hsk-v38-card";
+  backCard.className="flash-central hsk-v38-card";
   backCard.style.width=width+"px";
   backCard.style.height=height+"px";
   backCard.innerHTML=after;
@@ -71,7 +71,7 @@
     var clip=document.createElement("div");
     clip.className="hsk-v38-clip";
     var content=document.createElement("div");
-    content.className="hsk-v38-card";
+    content.className="flash-central hsk-v38-card";
     content.style.left=-x+"px";
     content.style.top="0";
     content.style.width=width+"px";
@@ -99,10 +99,13 @@
   var entering=-sign*s.width*.48*(1-p)+dx*.10*(1-p);
   var nextOpacity=.16+.84*smooth((p-.06)/.57);
   s.back.style.opacity=nextOpacity.toFixed(3);
+  // Remove the artificial zoom-out/zoom-in: preserve text size under perspective.
+  var backZ=-55*(1-p),perspective=1150;
+  var backComp=(perspective-backZ)/perspective;
   s.back.style.transform="translate3d("+entering.toFixed(2)+"px,"+
-   (13*(1-p)).toFixed(2)+"px,"+(-55*(1-p)).toFixed(2)+
+   (13*(1-p)).toFixed(2)+"px,"+backZ.toFixed(2)+
    "px) rotateY("+(-sign*14*(1-p)).toFixed(2)+"deg) scale("+
-   (.978+.022*p).toFixed(4)+")";
+   backComp.toFixed(4)+")";
   s.orb.style.opacity=(.24*globe).toFixed(3);
   s.orb.style.transform="translate(-50%,-50%) translateX("+
    clamp(follow*.22,-s.width*.09,s.width*.09).toFixed(2)+"px)";
@@ -121,9 +124,12 @@
    var tx=baseX+curveX+spread;
    var ty=-4*globe;
    var tz=curveZ+(isNew?-15*(1-p):0);
+   // Perspective z would otherwise magnify Chinese characters mid-swipe.
+   // Invert that magnification while retaining 3D bend, tilt and open gaps.
+   var textScale=clamp((perspective-tz)/perspective,.89,1.12);
    a.node.style.transform="translate3d("+tx.toFixed(2)+"px,"+
     ty.toFixed(2)+"px,"+tz.toFixed(2)+"px) rotateY("+
-    yaw.toFixed(2)+"deg)";
+    yaw.toFixed(2)+"deg) scale("+textScale.toFixed(4)+")";
    // Physically open vertical windows; do not create any horizontal seam.
    var seam=clamp(globe*8.5,0,8.5);
    a.clip.style.clipPath="inset(0 "+seam.toFixed(2)+"px 0 "+seam.toFixed(2)+"px round 4px)";

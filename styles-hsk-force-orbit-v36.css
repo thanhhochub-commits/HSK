@@ -1,0 +1,16 @@
+/* HSK Panda V36: swipe-force translation first, spherical 3D tilt second. */
+.hsk-force-host{position:relative;overflow:visible}
+.flash-layout>.flash-central.hsk-force-in-progress{visibility:hidden!important;transform:none!important}
+.flash-layout .hsk-force-stage{position:absolute;z-index:130;pointer-events:none;perspective:1000px;perspective-origin:50% 50%;transform-style:preserve-3d;overflow:visible}
+.flash-layout .hsk-force-under{position:absolute;inset:0;z-index:1;will-change:opacity,transform;pointer-events:none}
+.flash-layout .hsk-force-tile{position:absolute;transform-origin:center center;transform-style:preserve-3d;will-change:transform,opacity;backface-visibility:hidden;-webkit-backface-visibility:hidden;pointer-events:none}
+.flash-layout .hsk-force-clip{position:absolute;inset:0;overflow:hidden;border-radius:5px;background:linear-gradient(145deg,#fff,#eaf9ef);box-shadow:0 4px 14px rgba(13,72,50,.19);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.flash-layout .hsk-force-clip:after{content:"";position:absolute;inset:0;pointer-events:none;background:rgba(8,48,28,var(--sphere-dim,0))}
+.flash-layout .hsk-force-content{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;padding:45px 30px;text-align:center;gap:6px;border-radius:24px;background:linear-gradient(145deg,#fff,#eaf9ef);pointer-events:none}
+.flash-layout .hsk-force-content .flash-level{position:absolute;top:20px;left:23px}
+.flash-layout .hsk-force-content .hint{position:absolute;bottom:20px}
+.flash-layout .hsk-force-content .flash-swipe-tag{display:none!important}
+.flash-layout .hsk-force-content .hanzi{font-family:'Noto Sans SC',sans-serif;font-size:74px;font-weight:600;line-height:1.25}
+.flash-layout .hsk-force-content .pinyin{font-size:23px;color:#237f5c}
+.flash-layout .hsk-force-content .meaning{font-size:19px;font-weight:700}
+@media(max-width:560px){.flash-layout .hsk-force-content{padding:44px 20px}.flash-layout .hsk-force-content .hanzi{font-size:56px}}

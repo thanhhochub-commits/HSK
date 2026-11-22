@@ -408,16 +408,16 @@ function flashPage(){
  if(!w)return head("Flashcard","Chưa có từ nào.");
  return head("Flashcard + SRS 🧠","Ôn thẻ theo cấp HSK đang học. Toàn bộ Flashcard được mở miễn phí trong giai đoạn thử nghiệm.")+studyLevelsBar()
   +'<div class="flash-layout"><div class="flash-count">Thẻ cần ôn: '+arr.length+' · '+(Math.abs(flashIndex)%arr.length+1)+' / '+arr.length+'</div>'
-  +'<div class="flash-central" role="button" tabindex="0" data-action="flip" aria-label="Chạm để lật, vuốt trái để ghi nhận chưa nhớ, vuốt phải để chuyển thẻ">'
+  +'<div class="flash-central" role="button" tabindex="0" data-action="flip" aria-label="Chạm để cuộn lật, vuốt trái để ghi nhận chưa nhớ, vuốt phải để chuyển thẻ">'
   +'<span class="flash-level badge">'+hskVocabLabel(w.level)+'</span>'
   +'<span class="flash-swipe-tag flash-swipe-tag-left" aria-hidden="true">← Chưa nhớ</span>'
   +'<span class="flash-swipe-tag flash-swipe-tag-right" aria-hidden="true">Tiếp theo →</span>'
   +'<div class="hanzi">'+esc(w.h)+'</div>'
   +(flipped?'<div class="pinyin">'+esc(w.p)+'</div><div class="meaning">'+esc(w.v)+'</div><p class="example-line">'+w.ex+'</p>':'<div class="hint-text">Bạn có nhớ nghĩa và cách đọc của từ này?</div>')
-  +'<div class="hint">'+(flipped?"Vuốt trái hoặc phải để tiếp tục":"Chạm để lật thẻ xem đáp án")+'</div></div>'
+  +'<div class="hint">'+(flipped?"Chạm để cuộn lật về mặt trước":"Chạm để cuộn lật xem đáp án")+'</div></div>'
   +'<div class="flash-controls flash-audio">'+button(ic("audio")+" Nghe từ","speak",'data-id="'+w.id+'"',"secondary")+'</div>'
   +'<div class="flash-swipe-actions">'+button("← Chưa nhớ","flashAgain",'data-id="'+w.id+'"',"flash-again")+button("Tiếp theo →","nextflash","","flash-next")+'</div>'
-  +'<p class="flash-swipe-help">Vuốt trái: Chưa nhớ · Vuốt phải: Tiếp theo · Chạm thẻ để lật</p>'
+  +'<p class="flash-swipe-help">Vuốt trái: Chưa nhớ · Vuốt phải: Tiếp theo · Chạm thẻ để cuộn lật</p>'
   +'<div class="notice">Lịch ôn được lưu trong trình duyệt. Phiên bản thử nghiệm dùng lịch đơn giản theo mức độ nhớ, chưa phải thuật toán FSRS được hiệu chuẩn từ dữ liệu cá nhân.</div></div>';
 }
 function studyPracticeWord(){
@@ -594,77 +594,65 @@ function render(){var page=urlPage(),html=navHtml(page)+ '<div class="main">'+to
 function say(text,speed){if(!("speechSynthesis" in window)){alert("Trình duyệt này chưa hỗ trợ phát âm tự động.");return;}try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang="zh-CN";u.rate=speed||.88;var list=speechSynthesis.getVoices();var voice=list.find(function(v){return /zh[-_]CN/i.test(v.lang);})||list.find(function(v){return /^zh/i.test(v.lang);});if(voice)u.voice=voice;speechSynthesis.speak(u);}catch(e){alert("Không thể phát âm trên thiết bị này.");}}
 function markLearn(id){if(state.learned.indexOf(id)>=0)return;state.learned.push(id);earn(10,"learned");render();}
 function rate(id,grade){var r=state.reviews[id]||{interval:0,repetitions:0};if(grade==="again"){r.interval=1/1440;r.repetitions=0;}else if(grade==="good"){r.repetitions++;r.interval=r.repetitions===1?1:Math.round(Math.max(2,r.interval*2.1));}else{r.repetitions++;r.interval=r.repetitions===1?3:Math.round(Math.max(4,r.interval*2.7));}r.next=Date.now()+r.interval*86400000;state.reviews[id]=r;if(state.learned.indexOf(id)<0)state.learned.push(id);earn(grade==="again"?1:7,"reviewed");flipped=false;flashIndex++;render();}
-var flashFlipBusy=false;
-function flipFlashcard(){
- if(flashFlipBusy||flashSwipeBusy)return;
- var cardBefore=document.querySelector(".flash-layout .flash-central");
- if(!cardBefore||urlPage()!=="flashcards"){flipped=!flipped;render();return;}
- var oldFaceHTML=cardBefore.innerHTML;
- flipped=!flipped;
- render();
- var card=document.querySelector(".flash-layout .flash-central");
- if(!card)return;
- var reduceMotion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
- if(reduceMotion)return;
- var width=card.offsetWidth,height=card.offsetHeight;
- if(!width||!height)return;
- flashFlipBusy=true;
+
+var flashFlipBusy=false,flashSwipeBusy=false,flashDrag=null,flashSuppressClickUntil=0;
+function flashCurrentWord(){var a=flashWords();return a.length?a[((flashIndex%a.length)+a.length)%a.length]:null;}
+function flashAdvance(){flashIndex++;flipped=false;render();}
+function flashRollAnimation(previousMarkup,previousHeight){
+ var card=document.querySelector(".flash-layout > .flash-central");
+ if(!card)return false;
+ var height=Math.max(previousHeight,card.offsetHeight),width=card.offsetWidth;
+ if(height<1||width<1)return false;
+ card.style.minHeight=height+"px";
  card.classList.add("flash-roll-playing");
  var overlay=document.createElement("div");
  overlay.className="flash-roll-overlay";
  overlay.setAttribute("aria-hidden","true");
- var slices=8,unit=height/slices;
- for(var i=0;i<slices;i++){
-  var top=i*unit;
-  var slice=document.createElement("div");
-  slice.className="flash-roll-slice";
-  slice.style.top=top+"px";
-  slice.style.height=(i===slices-1?height-top:unit+0.5)+"px";
-  slice.style.animationDelay=(i*46)+"ms";
+ var count=9,step=height/count;
+ for(var k=0;k<count;k++){
+  var top=k*step;
+  var strip=document.createElement("div");
+  strip.className="flash-roll-slice";
+  strip.style.top=top+"px";
+  strip.style.height=(k===count-1?height-top:step+0.8)+"px";
+  strip.style.animationDelay=(k*65)+"ms";
+  strip.style.zIndex=String(count-k);
   var face=document.createElement("div");
   face.className="flash-central flash-roll-face";
   face.style.top=(-top)+"px";
   face.style.left="0";
   face.style.width=width+"px";
   face.style.height=height+"px";
-  face.innerHTML=oldFaceHTML;
-  slice.appendChild(face);
-  overlay.appendChild(slice);
+  face.innerHTML=previousMarkup;
+  strip.appendChild(face);overlay.appendChild(strip);
  }
  card.appendChild(overlay);
  setTimeout(function(){
   if(overlay.isConnected)overlay.remove();
-  if(card.isConnected)card.classList.remove("flash-roll-playing");
-  flashFlipBusy=false;
- },930);
+  if(card.isConnected){card.classList.remove("flash-roll-playing");card.style.minHeight="";}
+ },1200);
+ return true;
 }
-var flashDrag=null,flashSwipeBusy=false,flashSuppressClickUntil=0;
-function flashCurrentWord(){
- var arr=flashWords();
- return arr.length?arr[((flashIndex%arr.length)+arr.length)%arr.length]:null;
+function flipFlashcard(){
+ if(flashFlipBusy||flashSwipeBusy)return;
+ var card=document.querySelector(".flash-layout > .flash-central");
+ var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ var old=card?card.innerHTML:"",oldHeight=card?card.offsetHeight:0;
+ flashFlipBusy=true;
+ flipped=!flipped;render();
+ if(!reduce&&card)flashRollAnimation(old,oldHeight);
+ setTimeout(function(){flashFlipBusy=false;},reduce?0:1200);
 }
-function flashAdvance(){flashIndex++;flipped=false;render();}
 function flashMove(direction){
  if(flashSwipeBusy||flashFlipBusy)return;
- var w=flashCurrentWord();
- if(!w)return;
- flashDrag=null;
- var card=document.querySelector(".flash-central");
+ var word=flashCurrentWord();if(!word)return;
+ var card=document.querySelector(".flash-layout > .flash-central");
  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
- var finish=function(){
-  flashSwipeBusy=false;
-  if(direction==="left")rate(w.id,"again");
-  else flashAdvance();
- };
- if(!card||reduce){finish();return;}
- flashSwipeBusy=true;
- card.classList.remove("flash-dragging");
- card.classList.add("flash-swipe-exit");
- card.style.setProperty("--flash-left-opacity",direction==="left"?"1":"0");
- card.style.setProperty("--flash-right-opacity",direction==="right"?"1":"0");
- card.style.transform="translate3d("+(direction==="left"?"-120%":"120%")+",0,0) rotate("+(direction==="left"?"-13deg":"13deg")+")";
- card.style.opacity="0";
- setTimeout(finish,190);
+ var old=card?card.innerHTML:"",oldHeight=card?card.offsetHeight:0;
+ flashSwipeBusy=true;flashDrag=null;
+ if(direction==="left")rate(word.id,"again");else flashAdvance();
+ if(!reduce&&card)flashRollAnimation(old,oldHeight);
+ setTimeout(function(){flashSwipeBusy=false;},reduce?0:1200);
 }
 function flashDragReset(drag){
  if(!drag||!drag.card||!drag.card.isConnected)return;
@@ -692,10 +680,9 @@ document.addEventListener("pointermove",function(e){
   try{d.card.setPointerCapture(e.pointerId);}catch(err){}
  }
  if(e.cancelable)e.preventDefault();
- var max=d.card.clientWidth*0.85;
- var amount=Math.max(-max,Math.min(max,dx));
- d.card.style.transform="translate3d("+amount+"px,0,0) rotate("+(amount/20)+"deg)";
- d.card.style.opacity=String(1-Math.min(0.3,Math.abs(amount)/800));
+ var amount=Math.max(-30,Math.min(30,dx*0.12));
+ d.card.style.transform="translate3d("+amount+"px,0,0)";
+ d.card.style.opacity="1";
  d.card.style.setProperty("--flash-left-opacity",String(Math.min(1,Math.max(0,-dx)/115)));
  d.card.style.setProperty("--flash-right-opacity",String(Math.min(1,Math.max(0,dx)/115)));
 },{passive:false});

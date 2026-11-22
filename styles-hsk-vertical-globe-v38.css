@@ -1,0 +1,62 @@
+/* V38 Flashcard: six vertical ribbons with visible through-gaps and spherical 3D depth. */
+html.hsk-v38-lock-x{overflow-x:clip!important}
+.flash-layout.hsk-v38-host{position:relative}
+.flash-layout>.flash-central.hsk-v38-card-hidden{
+ visibility:hidden!important;transform:none!important;opacity:1!important
+}
+.flash-layout .hsk-v38-viewport{
+ position:absolute;z-index:150;pointer-events:none;overflow:hidden;
+ border-radius:24px;isolation:isolate;contain:layout paint;
+ background:linear-gradient(145deg,#f8fffb,#eaf9ef)
+}
+.flash-layout .hsk-v38-stage{
+ position:absolute;inset:0;perspective:1150px;perspective-origin:50% 50%;
+ transform-style:preserve-3d;pointer-events:none
+}
+.flash-layout .hsk-v38-orb{
+ position:absolute;left:50%;top:50%;width:94%;height:94%;
+ border-radius:50%;opacity:0;pointer-events:none;z-index:0;
+ background:radial-gradient(ellipse at 27% 24%,#fff 0%,rgba(225,249,234,.65) 44%,rgba(105,188,138,.22) 78%,rgba(22,110,69,.19) 100%);
+ box-shadow:inset -22px -12px 28px rgba(18,93,55,.18),inset 15px 12px 30px rgba(255,255,255,.75);
+ will-change:transform,opacity
+}
+.flash-layout .hsk-v38-back{
+ position:absolute;inset:0;z-index:1;pointer-events:none;
+ transform-style:preserve-3d;will-change:transform,opacity
+}
+.flash-layout .hsk-v38-ribbon{
+ position:absolute;transform-origin:center center;transform-style:preserve-3d;
+ will-change:transform,opacity;pointer-events:none;
+ -webkit-backface-visibility:hidden;backface-visibility:hidden
+}
+.flash-layout .hsk-v38-clip{
+ position:absolute;inset:0;overflow:hidden;border-radius:4px;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ box-shadow:0 5px 13px rgba(20,91,57,.17);
+ -webkit-backface-visibility:hidden;backface-visibility:hidden
+}
+.flash-layout .hsk-v38-clip::after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:rgba(8,60,35,var(--hsk-v38-shade,0))
+}
+.flash-layout .hsk-v38-card{
+ position:absolute;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:5px;
+ box-sizing:border-box;padding:45px 30px;text-align:center;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ border:1px solid #deede2;border-radius:24px;
+ overflow:hidden;pointer-events:none
+}
+.flash-layout .hsk-v38-card .flash-level{position:absolute;top:20px;left:23px}
+.flash-layout .hsk-v38-card .hint{position:absolute;bottom:20px}
+.flash-layout .hsk-v38-card .flash-swipe-tag{display:none!important}
+.flash-layout .hsk-v38-card .hanzi{
+ font-family:"Noto Sans SC",sans-serif;font-size:74px;
+ font-weight:600;line-height:1.25
+}
+.flash-layout .hsk-v38-card .pinyin{font-size:23px;color:#237f5c}
+.flash-layout .hsk-v38-card .meaning{font-size:19px;font-weight:700}
+@media(max-width:560px){
+ .flash-layout .hsk-v38-card{padding:44px 20px}
+ .flash-layout .hsk-v38-card .hanzi{font-size:56px}
+}

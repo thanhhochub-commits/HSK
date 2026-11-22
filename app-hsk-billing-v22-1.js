@@ -408,16 +408,16 @@ function flashPage(){
  if(!w)return head("Flashcard","Chưa có từ nào.");
  return head("Flashcard + SRS 🧠","Ôn thẻ theo cấp HSK đang học. Toàn bộ Flashcard được mở miễn phí trong giai đoạn thử nghiệm.")+studyLevelsBar()
   +'<div class="flash-layout"><div class="flash-count">Thẻ cần ôn: '+arr.length+' · '+(Math.abs(flashIndex)%arr.length+1)+' / '+arr.length+'</div>'
-  +'<div class="flash-central" role="button" tabindex="0" data-action="flip" aria-label="Chạm để cuộn lật, vuốt trái để ghi nhận chưa nhớ, vuốt phải để chuyển thẻ">'
+  +'<div class="flash-central" role="button" tabindex="0" data-action="flip" aria-label="Chạm để xem đáp án, vuốt trái để ghi nhận chưa nhớ, vuốt phải để chuyển thẻ">'
   +'<span class="flash-level badge">'+hskVocabLabel(w.level)+'</span>'
   +'<span class="flash-swipe-tag flash-swipe-tag-left" aria-hidden="true">← Chưa nhớ</span>'
   +'<span class="flash-swipe-tag flash-swipe-tag-right" aria-hidden="true">Tiếp theo →</span>'
   +'<div class="hanzi">'+esc(w.h)+'</div>'
   +(flipped?'<div class="pinyin">'+esc(w.p)+'</div><div class="meaning">'+esc(w.v)+'</div><p class="example-line">'+w.ex+'</p>':'<div class="hint-text">Bạn có nhớ nghĩa và cách đọc của từ này?</div>')
-  +'<div class="hint">'+(flipped?"Chạm để cuộn lật về mặt trước":"Chạm để cuộn lật xem đáp án")+'</div></div>'
+  +'<div class="hint">'+(flipped?"Chạm để ẩn đáp án":"Chạm để xem đáp án")+'</div></div>'
   +'<div class="flash-controls flash-audio">'+button(ic("audio")+" Nghe từ","speak",'data-id="'+w.id+'"',"secondary")+'</div>'
   +'<div class="flash-swipe-actions">'+button("← Chưa nhớ","flashAgain",'data-id="'+w.id+'"',"flash-again")+button("Tiếp theo →","nextflash","","flash-next")+'</div>'
-  +'<p class="flash-swipe-help">Vuốt trái: Chưa nhớ · Vuốt phải: Tiếp theo · Chạm thẻ để cuộn lật</p>'
+  +'<p class="flash-swipe-help">Vuốt trái: Chưa nhớ · Vuốt phải: Tiếp theo · Chạm thẻ để xem hoặc ẩn đáp án</p>'
   +'<div class="notice">Lịch ôn được lưu trong trình duyệt. Phiên bản thử nghiệm dùng lịch đơn giản theo mức độ nhớ, chưa phải thuật toán FSRS được hiệu chuẩn từ dữ liệu cá nhân.</div></div>';
 }
 function studyPracticeWord(){
@@ -601,96 +601,112 @@ function rate(id,grade){var r=state.reviews[id]||{interval:0,repetitions:0};if(g
    silently disappear when system reduced-motion is enabled. */
 
 /* Flashcard V29: replicate the vertical 3D launcher-column transition in reference video. */
+
+/* V30: tap reveals the answer; only swipe triggers the 3D ribbon transition. */
 var flashTurnBusy=false,flashDrag=null,flashSuppressClickUntil=0;
 function flashCurrentWord(){
- var words=flashWords();
- return words.length?words[((flashIndex%words.length)+words.length)%words.length]:null;
+ var arr=flashWords();
+ return arr.length?arr[((flashIndex%arr.length)+arr.length)%arr.length]:null;
 }
 function flashAdvance(){flashIndex++;flipped=false;render();}
-function flashTurn(update){
+function flipFlashcard(){
  if(flashTurnBusy)return;
+ flipped=!flipped;
+ render();
+}
+function flashMove(direction){
+ if(flashTurnBusy)return;
+ var word=flashCurrentWord();
+ if(!word)return;
  var previous=document.querySelector(".flash-layout > .flash-central");
- if(!previous){update();return;}
+ if(!previous){
+  if(direction==="left")rate(word.id,"again");
+  else flashAdvance();
+  return;
+ }
+ var before=previous.innerHTML,oldHeight=previous.offsetHeight;
  previous.classList.remove("flash-dragging");
  previous.style.transform="";
  previous.style.opacity="";
  previous.style.removeProperty("--flash-left-opacity");
  previous.style.removeProperty("--flash-right-opacity");
- var before=previous.innerHTML,oldHeight=previous.offsetHeight;
  flashTurnBusy=true;
- try{update();}catch(error){flashTurnBusy=false;throw error;}
- var card=document.querySelector(".flash-layout > .flash-central");
- if(!card){flashTurnBusy=false;return;}
- var width=card.offsetWidth,height=Math.max(oldHeight,card.offsetHeight);
- if(width<=0||height<=0){flashTurnBusy=false;return;}
- var after=card.innerHTML;
- card.style.minHeight=height+"px";
- card.classList.add("flash-column-active");
- var stage=document.createElement("div");
- stage.className="flash-column-stage";
- stage.setAttribute("aria-hidden","true");
- var count=5,columnWidth=width/count,animations=[];
- for(var i=0;i<count;i++){
-  var x=i*columnWidth;
-  var piece=document.createElement("div");
-  piece.className="flash-column-piece";
-  piece.style.left=x+"px";
-  piece.style.width=(i===count-1?width-x:columnWidth+.5)+"px";
-  piece.style.zIndex=String(count-i);
-  for(var faceIndex=0;faceIndex<2;faceIndex++){
-   var face=document.createElement("div");
-   face.className="flash-column-face "+(faceIndex?"rear":"front");
-   var content=document.createElement("div");
-   content.className="flash-central flash-column-content";
-   content.style.left=(-x)+"px";
-   content.style.width=width+"px";
-   content.style.height=height+"px";
-   content.innerHTML=faceIndex?after:before;
-   face.appendChild(content);
-   piece.appendChild(face);
-  }
-  stage.appendChild(piece);
-  var drift=14+3*i;
-  var frames=[
-   {offset:0,transform:"translate3d(0,0,0) rotateY(0deg)"},
-   {offset:.28,transform:"translate3d("+(drift*.35)+"px,0,23px) rotateY(-30deg)"},
-   {offset:.52,transform:"translate3d("+drift+"px,0,97px) rotateY(-92deg)"},
-   {offset:.8,transform:"translate3d("+(drift*.4)+"px,0,25px) rotateY(-151deg)"},
-   {offset:1,transform:"translate3d(0,0,0) rotateY(-180deg)"}
-  ];
-  if(typeof piece.animate==="function"){
-   var motion=piece.animate(frames,{
-    duration:730,delay:(count-1-i)*100,easing:"cubic-bezier(.22,.72,.24,1)",fill:"both"
-   });
-   animations.push(motion.finished.catch(function(){return null;}));
-  }else{
-   piece.classList.add("flash-column-fallback");
-   piece.style.animationDelay=((count-1-i)*100)+"ms";
-  }
- }
- card.appendChild(stage);
- var complete=false;
- function cleanup(){
-  if(complete)return;
-  complete=true;
-  if(stage.isConnected)stage.remove();
-  if(card.isConnected){card.classList.remove("flash-column-active");card.style.minHeight="";}
-  flashTurnBusy=false;
- }
- if(animations.length===count){
-  Promise.all(animations).then(cleanup,cleanup);
-  setTimeout(cleanup,1500);
- }else setTimeout(cleanup,1250);
-}
-function flipFlashcard(){flashTurn(function(){flipped=!flipped;render();});}
-function flashMove(direction){
- if(flashTurnBusy)return;
- var word=flashCurrentWord();if(!word)return;
  flashDrag=null;
- flashTurn(function(){
+ try{
   if(direction==="left")rate(word.id,"again");
   else flashAdvance();
- });
+ }catch(err){flashTurnBusy=false;throw err;}
+ var card=document.querySelector(".flash-layout > .flash-central");
+ if(!card){flashTurnBusy=false;return;}
+ var width=card.offsetWidth,height=Math.max(card.offsetHeight,oldHeight);
+ if(width<1||height<1){flashTurnBusy=false;return;}
+ var after=card.innerHTML;
+ card.style.minHeight=height+"px";
+ card.classList.add("flash-v30-active");
+ var stage=document.createElement("div");
+ stage.className="flash-v30-stage";
+ stage.setAttribute("aria-hidden","true");
+ var count=7,cw=width/count,sign=direction==="left"?-1:1;
+ for(var i=0;i<count;i++){
+  var x=i*cw,strip=document.createElement("div");
+  strip.className="flash-v30-slice";
+  strip.style.left=x+"px";
+  strip.style.width=(i===count-1?width-x:cw+.5)+"px";
+  strip.style.zIndex=String(count-i);
+  for(var faceNo=0;faceNo<2;faceNo++){
+   var face=document.createElement("div");
+   face.className="flash-v30-surface "+(faceNo?"back":"front");
+   var inner=document.createElement("div");
+   inner.className="flash-v30-inner";
+   inner.style.left=(-x)+"px";
+   inner.style.width=width+"px";
+   inner.style.height=height+"px";
+   inner.innerHTML=faceNo?after:before;
+   face.appendChild(inner);
+   strip.appendChild(face);
+  }
+  stage.appendChild(strip);
+ }
+ card.appendChild(stage);
+ var done=false;
+ function finish(){
+  if(done)return;
+  done=true;
+  if(stage.isConnected)stage.remove();
+  if(card.isConnected){
+   card.classList.remove("flash-v30-active");
+   card.style.minHeight="";
+  }
+  flashTurnBusy=false;
+ }
+ function animateStrips(){
+  if(!stage.isConnected){finish();return;}
+  var promises=[];
+  for(var k=0;k<count;k++){
+   var slice=stage.children[k],drift=sign*(17+(k%3)*4);
+   var frames=[
+    {offset:0,transform:"translate3d(0,0,0) rotateY(0deg) scaleX(1)"},
+    {offset:.2,transform:"translate3d("+(drift*.34)+"px,-2px,25px) rotateY("+(-22*sign)+"deg) scaleX(.94)"},
+    {offset:.49,transform:"translate3d("+drift+"px,-6px,130px) rotateY("+(-88*sign)+"deg) scaleX(.73)"},
+    {offset:.76,transform:"translate3d("+(drift*.42)+"px,-4px,60px) rotateY("+(-145*sign)+"deg) scaleX(.91)"},
+    {offset:1,transform:"translate3d(0,0,0) rotateY("+(-180*sign)+"deg) scaleX(1)"}
+   ];
+   var delay=(direction==="left"?count-1-k:k)*75;
+   if(typeof slice.animate==="function"){
+    var motion=slice.animate(frames,{
+     duration:850,delay:delay,easing:"cubic-bezier(.15,.72,.22,1)",fill:"both"
+    });
+    promises.push(motion.finished.catch(function(){return null;}));
+   }else{
+    slice.classList.add("flash-v30-fallback");
+    slice.style.animationDelay=delay+"ms";
+   }
+  }
+  if(promises.length===count)Promise.all(promises).then(finish,finish);
+ }
+ if(typeof requestAnimationFrame==="function")requestAnimationFrame(animateStrips);
+ else animateStrips();
+ setTimeout(finish,1800);
 }
 function flashDragReset(drag){
  if(!drag||!drag.card||!drag.card.isConnected)return;

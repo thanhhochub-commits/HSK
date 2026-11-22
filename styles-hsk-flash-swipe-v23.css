@@ -1,0 +1,61 @@
+/* Flashcard gestures: left = chưa nhớ, right = tiếp theo */
+.flash-layout .flash-central{
+ touch-action:pan-y;
+ user-select:none;
+ -webkit-user-select:none;
+ -webkit-tap-highlight-color:transparent;
+ overflow:hidden;
+ will-change:transform;
+ transition:transform 230ms cubic-bezier(.2,.78,.25,1),opacity 200ms ease,box-shadow 200ms ease;
+}
+.flash-layout .flash-central.flash-dragging{transition:none!important;cursor:grabbing}
+.flash-layout .flash-central.flash-swipe-exit{pointer-events:none;transition:transform 190ms ease-in,opacity 190ms ease-in}
+.flash-layout .flash-swipe-tag{
+ position:absolute;top:48%;z-index:2;
+ padding:10px 14px;border:2px solid;border-radius:12px;
+ font-size:14px;font-weight:800;line-height:1.25;
+ pointer-events:none;opacity:0;
+ box-shadow:0 5px 18px #0000000e;
+}
+.flash-layout .flash-swipe-tag-left{
+ left:18px;color:#b46816;background:#fff8ef;border-color:#f2b967;
+ transform:translateY(-50%) rotate(-9deg);
+ opacity:var(--flash-left-opacity,0)
+}
+.flash-layout .flash-swipe-tag-right{
+ right:18px;color:#087c59;background:#edfdf4;border-color:#57c69a;
+ transform:translateY(-50%) rotate(9deg);
+ opacity:var(--flash-right-opacity,0)
+}
+.flash-layout .flash-audio{margin:15px 0 7px}
+.flash-layout .flash-swipe-actions{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;margin:14px auto 10px;
+}
+.flash-layout .flash-swipe-actions .btn{
+ width:100%;min-height:54px;border-radius:15px;
+ font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;
+ transition:transform .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.flash-layout .flash-swipe-actions .btn:active{transform:scale(.97)}
+.flash-layout .flash-swipe-actions .flash-again{
+ color:#a65b13;background:#fff5e9;border:1px solid #f1c58d
+}
+.flash-layout .flash-swipe-actions .flash-next{
+ color:#fff;background:#079669;border:1px solid #079669
+}
+.flash-layout .flash-swipe-actions .flash-again:hover{background:#ffebd3}
+.flash-layout .flash-swipe-actions .flash-next:hover{background:#087f5a}
+.flash-layout .flash-swipe-help{
+ text-align:center;font-size:11px;color:#738d80;
+ margin:0 auto 16px;line-height:1.6
+}
+@media(max-width:560px){
+ .flash-layout .flash-central{min-height:315px;padding:44px 20px}
+ .flash-layout .flash-swipe-actions{gap:9px}
+ .flash-layout .flash-swipe-actions .btn{min-height:56px;font-size:13px}
+ .flash-layout .flash-swipe-tag{font-size:11px;padding:7px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .flash-layout .flash-central,.flash-layout .flash-swipe-actions .btn{transition:none!important}
+}

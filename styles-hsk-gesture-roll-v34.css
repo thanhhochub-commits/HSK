@@ -1,0 +1,55 @@
+/* V34. Real-time curved 3D flashcard roll with seven wide strips. */
+.hsk-v34-host{position:relative;overflow:visible}
+.flash-layout>.flash-central.hsk-v34-hidden{
+ visibility:hidden!important;transform:none!important;opacity:1!important
+}
+.flash-layout .hsk-v34-layer{
+ position:absolute;z-index:120;pointer-events:none;
+ perspective:1100px;perspective-origin:50% 50%;
+ transform-style:preserve-3d;overflow:visible
+}
+.flash-layout .hsk-v34-behind{
+ position:absolute;inset:0;z-index:1;
+ transform-style:preserve-3d;will-change:transform,opacity;
+ pointer-events:none
+}
+.flash-layout .hsk-v34-strip{
+ position:absolute;top:0;height:100%;z-index:5;
+ transform-origin:center center;transform-style:preserve-3d;
+ will-change:transform;pointer-events:none
+}
+.flash-layout .hsk-v34-surface{
+ position:absolute;inset:0;overflow:hidden;
+ -webkit-backface-visibility:hidden;backface-visibility:hidden;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ border-left:1px solid rgba(16,82,55,.12);
+ border-right:1px solid rgba(16,82,55,.12);
+ box-shadow:0 7px 16px rgba(14,75,47,.13)
+}
+.flash-layout .hsk-v34-surface::after{
+ position:absolute;inset:0;content:"";
+ background:rgba(6,55,35,var(--v34-shade,0));
+ pointer-events:none
+}
+.flash-layout .hsk-v34-back{transform:rotateY(180deg)}
+.flash-layout .hsk-v34-image{
+ position:absolute;top:0;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;
+ text-align:center;gap:6px;box-sizing:border-box;
+ padding:45px 30px;border-radius:24px;
+ border:1px solid #deede2;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ overflow:hidden;pointer-events:none
+}
+.flash-layout .hsk-v34-image .flash-level{position:absolute;top:20px;left:23px}
+.flash-layout .hsk-v34-image .hint{position:absolute;bottom:20px}
+.flash-layout .hsk-v34-image .flash-swipe-tag{display:none!important}
+.flash-layout .hsk-v34-image .hanzi{
+ font-family:"Noto Sans SC",sans-serif;font-size:74px;font-weight:600;line-height:1.25
+}
+.flash-layout .hsk-v34-image .pinyin{font-size:23px;color:#237f5c}
+.flash-layout .hsk-v34-image .meaning{font-size:19px;font-weight:700}
+@media(max-width:560px){
+ .flash-layout .hsk-v34-image{padding:44px 20px}
+ .flash-layout .hsk-v34-image .hanzi{font-size:56px}
+}

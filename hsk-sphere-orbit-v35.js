@@ -34,7 +34,7 @@
     var underBody=document.createElement('div');underBody.className='hsk-sphere-content';
     underBody.style.width=w+'px';underBody.style.height=h+'px';underBody.innerHTML=nextHTML;
     under.appendChild(underBody);stage.appendChild(under);
-    var cols=w<520?3:4,rows=3,tiles=[],pw=w/cols,ph=h/rows;
+    var cols=3,rows=3,tiles=[],pw=w/cols,ph=h/rows;
     for(var side=0;side<2;side++){
       for(var row=0;row<rows;row++)for(var col=0;col<cols;col++){
         var x=col*pw,y=row*ph;
@@ -70,20 +70,20 @@
       var v=(t.row-(s.rows-1)/2)/((s.rows-1)/2);
       var q=t.side?p-1:p;
       var theta=sign*(Math.PI*2/3)*q+u*0.35*fullness;
-      var lat=v*0.36*fullness;
+      var lat=v*0.58*fullness;
       var flatX=(t.col+.5)*s.width/s.cols-s.width/2;
       var flatY=(t.row+.5)*s.height/s.rows-s.height/2;
       var sphericalX=radius*Math.sin(theta)*Math.cos(lat);
-      var sphericalY=s.height*0.37*Math.sin(lat);
+      var sphericalY=s.height*0.58*Math.sin(lat);
       var targetX=flatX*(1-fullness)+sphericalX*fullness;
       var targetY=flatY*(1-fullness)+sphericalY*fullness;
-      var spread=fullness*(u*13+sign*4*Math.sin(v*2.2));
+      var spread=fullness*(u*15+sign*5*Math.sin(v*2.2));
       var z=clamp(radius*(Math.cos(theta)*Math.cos(lat)-1)*fullness,-175,24);
       var angleY=(sign*120*q+u*20*fullness);
-      var angleX=-v*19*fullness;
+      var angleX=-v*32*fullness;
       var shiftX=targetX-flatX+spread,shiftY=targetY-flatY+v*10*fullness;
       t.el.style.transform='translate3d('+shiftX.toFixed(2)+'px,'+shiftY.toFixed(2)+'px,'+z.toFixed(2)+'px) rotateY('+angleY.toFixed(2)+'deg) rotateX('+angleX.toFixed(2)+'deg)';
-      var visible=t.side?smooth((p-0.10)/0.35):(1-smooth((p-0.72)/0.24));
+      var visible=t.side?smooth((p-0.14)/0.44):(1-smooth((p-0.48)/0.28));
       t.el.style.opacity=visible.toFixed(3);
       t.el.style.setProperty('--sphere-dim',(0.07+0.25*fullness*(0.45+Math.abs(u)*0.55)).toFixed(3));
       t.el.style.zIndex=String(t.side?(p>0.45?52:32):(p<0.55?55:34));

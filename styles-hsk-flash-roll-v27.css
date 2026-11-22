@@ -1,0 +1,117 @@
+/* HSK Panda V27: nine independently separated two-sided 3D rolling panels */
+.flash-layout > .flash-central.flash-turn-playing{
+  isolation:isolate;
+  overflow:visible!important;
+  transform:none!important;
+  opacity:1!important;
+  pointer-events:none;
+}
+.flash-layout .flash-roll-stage{
+  position:absolute;
+  inset:0;
+  z-index:60;
+  pointer-events:none;
+  perspective:1100px;
+  transform-style:preserve-3d;
+  overflow:visible;
+}
+.flash-layout .flash-roll-piece{
+  position:absolute;
+  left:0;
+  width:100%;
+  padding:0;
+  margin:0;
+  transform-origin:50% 50%;
+  transform-style:preserve-3d;
+  isolation:isolate;
+  will-change:transform;
+  animation:flash-v27-peel 750ms cubic-bezier(.22,.73,.2,1) both;
+}
+.flash-layout .flash-roll-side{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  background:linear-gradient(145deg,#fff,#eaf9ef);
+  box-shadow:
+    0 8px 17px rgba(14,81,56,.22),
+    inset 0 -2px 2px rgba(14,81,56,.12);
+  border-top:1px solid rgba(116,180,145,.18);
+  border-bottom:1px solid rgba(42,121,80,.19);
+}
+.flash-layout .flash-roll-front::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:0;
+  bottom:0;
+  height:12px;
+  background:linear-gradient(transparent,rgba(19,76,51,.23));
+  pointer-events:none;
+}
+.flash-layout .flash-roll-rear{
+  transform:rotateX(180deg);
+  background:linear-gradient(145deg,#effbf2,#fff);
+}
+.flash-layout .flash-roll-rear::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;height:9px;
+  background:linear-gradient(rgba(19,76,51,.12),transparent);
+  pointer-events:none;
+}
+.flash-layout .flash-central.flash-roll-content{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  min-height:0!important;
+  max-height:none!important;
+  box-sizing:border-box;
+  margin:0;
+  padding:45px 30px;
+  border:0!important;
+  border-radius:0;
+  background:linear-gradient(145deg,#fff,#eaf9ef);
+  box-shadow:none!important;
+  transform:none!important;
+  opacity:1!important;
+  transition:none!important;
+  overflow:hidden;
+  pointer-events:none;
+  cursor:default;
+  will-change:auto;
+}
+.flash-layout .flash-roll-content .flash-swipe-tag{
+  display:none!important;
+}
+@keyframes flash-v27-peel{
+  0% {
+    transform:translate3d(0,0,0) rotateX(0deg) scaleY(1);
+  }
+  18% {
+    transform:translate3d(0,-3px,26px) rotateX(-25deg) scaleY(.96);
+  }
+  40% {
+    transform:translate3d(var(--piece-x,18px),-12px,94px) rotateX(-82deg) scaleY(.81);
+  }
+  65% {
+    transform:translate3d(var(--piece-back-x,-8px),-11px,80px) rotateX(-132deg) scaleY(.84);
+  }
+  87% {
+    transform:translate3d(0,-3px,22px) rotateX(-172deg) scaleY(.96);
+  }
+  100% {
+    transform:translate3d(0,0,0) rotateX(-180deg) scaleY(1);
+  }
+}
+@media(max-width:560px){
+  .flash-layout .flash-central.flash-roll-content{padding:44px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .flash-layout .flash-roll-piece{animation:none!important}
+}

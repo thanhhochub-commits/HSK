@@ -1,0 +1,76 @@
+name: HSK course v2.0 integration smoke
+on:
+  push:
+    paths:
+      - ".github/workflows/hsk-course-smoke.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  course:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read deployed scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://thanhhochub-commits.github.io/HSK/'
+          # Pages can be briefly behind the most recent commit; retry publication only.
+          for i in $(seq 1 25); do
+            curl -fsSL --max-time 15 "$base" -o /tmp/hsk-index.html
+            if grep -q 'hsk-topic-curriculum-v2.0' /tmp/hsk-index.html; then break; fi
+            sleep 3
+          done
+          grep -q 'hsk-topic-curriculum-v2.0' /tmp/hsk-index.html
+          grep -q 'hsk-study-content-v20.js' /tmp/hsk-index.html
+          grep -q 'app-hsk-billing-v20.js' /tmp/hsk-index.html
+          grep -q 'hsk-billing-v18-1.js' /tmp/hsk-index.html
+          ! grep -q 'hsk-drive-catalog-v1.js' /tmp/hsk-index.html
+          ! grep -q 'app-hsk-billing-v19.js' /tmp/hsk-index.html
+          for file in app-hsk-billing-v20.js hsk-study-content-v20.js; do
+            curl -fsSL --max-time 25 "$base$file" -o "/tmp/$file"
+            node --check "/tmp/$file"
+          done
+          echo 'PASS: v2.0 published; no Drive library; billing module unchanged'
+      - name: Validate lesson content and Pro content partition
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'JS'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const window={};
+          vm.runInNewContext(fs.readFileSync('/tmp/hsk-study-content-v20.js','utf8'),{window});
+          const data=window.HSK_STUDY_CONTENT;
+          assert.equal(data.lessons.length,30);
+          assert.equal(data.lessons.filter(x=>x.free).length,9);
+          for(let lvl=1;lvl<=9;lvl++){
+            const rows=data.lessons.filter(x=>x.level===lvl);
+            assert(rows.length>=2);
+            assert.equal(rows.filter(x=>x.free).length,1);
+          }
+          assert(data.lessons.every(x=>
+            x.vocab.length===5&&x.dialogue.length===2&&
+            x.options.length===3&&x.answer>=0&&x.answer<3&&x.why
+          ));
+          const app=fs.readFileSync('/tmp/app-hsk-billing-v20.js','utf8');
+          assert(app.includes('studyLessonPage'));
+          assert(app.includes('studyListenSelector'));
+          assert(app.includes('studyPracticeWord'));
+          assert(app.includes('"course-lesson":studyLessonPage'));
+          assert(!app.includes('libraryPage()'));
+          assert(!app.includes('hskLibraryTree'));
+          for(const price of ['89000','219000','699000'])
+            assert(app.includes(price));
+          console.log('PASS: 30 original lessons, 9 free, interactive lessons integrated, paid plans intact');
+          JS
+      - name: Verify old library assets are no longer published
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://thanhhochub-commits.github.io/HSK/'
+          for name in hsk-drive-catalog-v1.js styles-hsk-library-v19.css; do
+            code=$(curl -Ls -o /dev/null -w '%{http_code}' --max-time 15 "$base$name")
+            echo "$name returns HTTP $code"
+            test "$code" = '404'
+          done

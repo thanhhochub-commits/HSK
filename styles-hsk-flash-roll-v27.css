@@ -23,7 +23,6 @@
   margin:0;
   transform-origin:50% 50%;
   transform-style:preserve-3d;
-  isolation:isolate;
   will-change:transform;
   animation:flash-v27-peel 750ms cubic-bezier(.22,.73,.2,1) both;
 }

@@ -1,0 +1,61 @@
+/* HSK Panda V37: one shared 3D globe with a stable, clipped card-sized viewport. */
+html.hsk-v37-no-overflow{overflow-x:clip!important}
+.flash-layout.hsk-v37-host{position:relative}
+.flash-layout>.flash-central.hsk-v37-card-hidden{visibility:hidden!important;transform:none!important;opacity:1!important}
+.flash-layout .hsk-v37-viewport{
+  position:absolute;z-index:140;overflow:hidden;border-radius:24px;
+  pointer-events:none;isolation:isolate;contain:layout paint;
+  background:linear-gradient(145deg,#f8fffb,#eaf9ef);
+}
+.flash-layout .hsk-v37-stage{
+  position:absolute;inset:0;perspective:1100px;
+  perspective-origin:center center;transform-style:preserve-3d;
+  pointer-events:none;
+}
+.flash-layout .hsk-v37-orb{
+  position:absolute;left:50%;top:50%;width:92%;height:94%;
+  border-radius:50%;opacity:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 27%,rgba(255,255,255,.98) 0%,rgba(228,246,235,.73) 39%,rgba(150,204,176,.33) 72%,rgba(62,143,104,.27) 100%);
+  box-shadow:inset -22px -11px 35px rgba(31,97,59,.19),inset 15px 12px 28px rgba(255,255,255,.82),0 8px 26px rgba(11,65,43,.12);
+  border:1px solid rgba(82,153,113,.18);will-change:opacity,transform;
+}
+.flash-layout .hsk-v37-backdrop{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  will-change:transform,opacity;transform-style:preserve-3d;
+}
+.flash-layout .hsk-v37-patch{
+  position:absolute;transform-style:preserve-3d;
+  transform-origin:center center;will-change:transform,opacity;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  pointer-events:none;
+}
+.flash-layout .hsk-v37-face{
+  position:absolute;inset:0;overflow:hidden;border-radius:7px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:linear-gradient(145deg,#fff,#eaf9ef);
+  box-shadow:0 5px 12px rgba(20,79,50,.17),0 0 0 1px rgba(80,149,107,.11);
+}
+.flash-layout .hsk-v37-face::after{
+  position:absolute;inset:0;content:"";pointer-events:none;
+  background:rgba(9,62,40,var(--hsk-v37-shade,0));
+}
+.flash-layout .hsk-v37-texture{
+  position:absolute;top:0;left:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;
+  box-sizing:border-box;padding:45px 30px;text-align:center;
+  border-radius:24px;border:1px solid #deede2;
+  background:linear-gradient(145deg,#fff,#eaf9ef);
+  pointer-events:none;overflow:hidden;
+}
+.flash-layout .hsk-v37-texture .flash-level{position:absolute;top:20px;left:23px}
+.flash-layout .hsk-v37-texture .hint{position:absolute;bottom:20px}
+.flash-layout .hsk-v37-texture .flash-swipe-tag{display:none!important}
+.flash-layout .hsk-v37-texture .hanzi{
+  font-family:'Noto Sans SC',sans-serif;font-size:74px;line-height:1.25;font-weight:600;
+}
+.flash-layout .hsk-v37-texture .pinyin{font-size:23px;color:#237f5c}
+.flash-layout .hsk-v37-texture .meaning{font-size:19px;font-weight:700}
+@media(max-width:560px){
+ .flash-layout .hsk-v37-texture{padding:44px 20px}
+ .flash-layout .hsk-v37-texture .hanzi{font-size:56px}
+}

@@ -1,4 +1,4 @@
-/* HSK Panda V38: six seamless vertical 3D globe ribbons with real opening gaps.
+/* HSK Panda V38.2: softly rounded six-ribbon 3D globe with visible gaps.
  * Each band spans the FULL card height; no horizontal slicing.
  * Pointer distance is the primary motion. The following card is visible behind the gaps.
  * The main app keeps tap as a plain answer reveal and handles SRS on committed swipes.
@@ -93,7 +93,7 @@
   p=clamp(p,0,1);dx=Number(dx)||0;s.progress=p;s.dragX=dx;
   var sign=s.direction==="left"?-1:1;
   var globe=Math.pow(Math.max(0,Math.sin(Math.PI*p)),.8);
-  var rx=s.width*.53,rz=Math.min(s.width*.23,s.height*.40);
+  var rx=s.width*.53,rz=Math.min(s.width*.255,s.height*.42);
   // Fingers directly pull the old card; 3D orbit only adds curvature.
   var follow=clamp(dx*.78,-s.width*.44,s.width*.44);
   var entering=-sign*s.width*.48*(1-p)+dx*.10*(1-p);
@@ -113,16 +113,16 @@
   for(var k=0;k<s.pieces.length;k++){
    var a=s.pieces[k],u=(a.i-half)/half;
    // Each ribbon is an adjacent longitude of the same broad ellipsoid.
-   var latitudeLongitude=u*.79;
+   var latitudeLongitude=u*.84;
    var curveX=(rx*Math.sin(latitudeLongitude)-a.x)*globe;
    var curveZ=rz*(Math.cos(latitudeLongitude)-.62)*globe;
    var spread=u*19*globe;
    var isNew=!!a.side;
    var baseX=isNew?entering:follow;
    var spin=sign*(isNew?-125*(1-p):125*p);
-   var yaw=spin+u*41*globe;
+   var yaw=spin+u*44*globe;
    var tx=baseX+curveX+spread;
-   var ty=-4*globe;
+   var ty=-(3.5+1.5*(1-u*u))*globe;
    var tz=curveZ+(isNew?-15*(1-p):0);
    // Perspective z would otherwise magnify Chinese characters mid-swipe.
    // Invert that magnification while retaining 3D bend, tilt and open gaps.
@@ -132,7 +132,9 @@
     yaw.toFixed(2)+"deg) scale("+textScale.toFixed(4)+")";
    // Physically open vertical windows; do not create any horizontal seam.
    var seam=clamp(globe*8.5,0,8.5);
-   a.clip.style.clipPath="inset(0 "+seam.toFixed(2)+"px 0 "+seam.toFixed(2)+"px round 4px)";
+   var corner=6+6*globe;
+   a.clip.style.borderRadius=corner.toFixed(2)+"px";
+   a.clip.style.clipPath="inset(0 "+seam.toFixed(2)+"px 0 "+seam.toFixed(2)+"px round "+corner.toFixed(2)+"px)";
    a.clip.style.webkitClipPath=a.clip.style.clipPath;
    var opacity=isNew?smooth((p-.08)/.48):1-smooth((p-.50)/.37);
    a.node.style.opacity=opacity.toFixed(3);

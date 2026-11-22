@@ -1,4 +1,4 @@
-/* HSK Panda V38.5: side-anchored swipe badges, six-ribbon rounded 3D globe.
+/* HSK Panda V38.6: subtle outer edge badges and soft-focus incoming card, six-ribbon globe.
  * Each band spans the FULL card height; no horizontal slicing.
  * Pointer distance is the primary motion. The following card is visible behind the gaps.
  * The main app keeps tap as a plain answer reveal and handles SRS on committed swipes.
@@ -59,6 +59,7 @@
   backCard.style.width=width+"px";
   backCard.style.height=height+"px";
   backCard.innerHTML=after;
+  backCard.classList.add("hsk-v38-preview-content");
   back.appendChild(backCard);stage.appendChild(back);
   var count=6,pw=width/count,pieces=[];
   for(var side=0;side<2;side++){
@@ -79,7 +80,8 @@
     content.style.height=height+"px";
     content.innerHTML=side?after:before;
     clip.appendChild(content);ribbon.appendChild(clip);stage.appendChild(ribbon);
-    pieces.push({node:ribbon,clip:clip,side:side,i:i,x:x+pw/2-width/2});
+    if(side)content.classList.add("hsk-v38-preview-content");
+    pieces.push({node:ribbon,clip:clip,content:content,side:side,i:i,x:x+pw/2-width/2});
    }
   }
   // Visible swipe badge lives on document.body, outside every 3D, clipped,
@@ -88,17 +90,15 @@
   swipeBadge.className="hsk-v38-swipe-badge";
   swipeBadge.setAttribute("aria-hidden","true");
   swipeBadge.textContent=direction==="left"?"← Chưa nhớ":"Tiếp theo →";
-  swipeBadge.style.cssText="position:fixed;display:block;z-index:2147483646;"+
+  // Leave colors, typography, shadow and sizing to CSS; inline overrides
+  // previously made the label too bold despite later design changes.
+  swipeBadge.style.cssText="position:fixed;display:flex;z-index:2147483646;"+
    "pointer-events:none;left:0;top:0;transform:translateY(-50%);"+
-   "opacity:0;visibility:hidden;padding:11px 19px;border-radius:14px;"+
-   "border:2px solid;white-space:nowrap;text-align:center;"+
-   "font:800 17px/1.4 'Be Vietnam Pro',sans-serif;"+
-   "box-shadow:0 8px 24px rgba(18,54,35,.23);"+
-   "transition:opacity 65ms linear;";
+   "opacity:0;visibility:hidden;transition:opacity 80ms linear;";
   document.body.appendChild(swipeBadge);
   viewport.appendChild(stage);layout.appendChild(viewport);
   scene={card:card,layout:layout,viewport:viewport,stage:stage,orb:orb,
-   back:back,swipeBadge:swipeBadge,
+   back:back,backCard:backCard,swipeBadge:swipeBadge,
    pieces:pieces,count:count,width:width,height:height,
    direction:direction,progress:0,dragX:0,status:"drag"};
   draw(scene,0,0);
@@ -109,23 +109,31 @@
   p=clamp(p,0,1);dx=Number(dx)||0;s.progress=p;s.dragX=dx;
   // Body-level feedback is guaranteed to remain above the clipped 3D stage.
   // The label is visible while dragging, not only after swipe completion.
-  var reveal=smooth((Math.abs(dx)-8)/Math.min(72,s.width*.21));
-  var feedbackOpacity=clamp(.58+.42*reveal,0,1);
+  var reveal=smooth((Math.abs(dx)-10)/Math.min(85,s.width*.22));
+  var feedbackOpacity=clamp(.72+.18*reveal,0,.90);
   var showBadge=Math.abs(dx)>=10;
   var badge=s.swipeBadge;
   var rect=s.card.getBoundingClientRect();
-  badge.textContent=s.direction==="left"?"← Chưa nhớ":"Tiếp theo →";
-  // V38.5: pin the label to the actual left/right WING of the card.
-  // Left swipe: flush against the left edge. Right swipe: flush against right.
-  // Never position the label above the central Chinese character.
   var isLeft=s.direction==="left";
-  var edge=clamp(rect.width*.035,9,22);
-  badge.style.left=(isLeft?rect.left+edge:rect.right-edge).toFixed(2)+"px";
-  badge.style.top=(rect.top+rect.height*.50).toFixed(2)+"px";
-  badge.style.transform=isLeft?"translate(0,-50%)":"translate(-100%,-50%)";
-  badge.style.backgroundColor=s.direction==="left"?"#fff1d9":"#e2fff0";
-  badge.style.color=s.direction==="left"?"#8c4608":"#056844";
-  badge.style.borderColor=s.direction==="left"?"#e7a04b":"#45b788";
+  badge.textContent=isLeft?"← Chưa nhớ":"Tiếp theo →";
+  // Prefer OUTSIDE the left or right edge. When a narrow mobile viewport
+  // lacks room, dock in the upper side-corner, away from the central hanzi.
+  var vw=document.documentElement.clientWidth||window.innerWidth||rect.right+120;
+  var bw=badge.offsetWidth||(isLeft?108:112);
+  var gap=clamp(rect.width*.021,7,13);
+  var outside=isLeft?(rect.left-gap-bw>=8):(rect.right+gap+bw<=vw-8);
+  var anchorX=isLeft?(outside?rect.left-gap:rect.left+11):
+   (outside?rect.right+gap:rect.right-11);
+  var anchorY=outside?rect.top+rect.height*.50:
+   rect.top+Math.min(54,rect.height*.19);
+  badge.style.left=anchorX.toFixed(2)+"px";
+  badge.style.top=anchorY.toFixed(2)+"px";
+  badge.style.transform=isLeft?
+   (outside?"translate(-100%,-50%)":"translate(0,-50%)"):
+   (outside?"translate(0,-50%)":"translate(-100%,-50%)");
+  badge.style.backgroundColor=isLeft?"rgba(255,246,234,.95)":"rgba(235,253,242,.95)";
+  badge.style.color=isLeft?"#975416":"#096c4b";
+  badge.style.borderColor=isLeft?"rgba(225,157,86,.70)":"rgba(78,176,123,.70)";
   badge.style.visibility=showBadge?"visible":"hidden";
   badge.style.opacity=showBadge?feedbackOpacity.toFixed(3):"0";
   var sign=s.direction==="left"?-1:1;
@@ -136,6 +144,10 @@
   var entering=-sign*s.width*.48*(1-p)+dx*.10*(1-p);
   var nextOpacity=.16+.84*smooth((p-.06)/.57);
   s.back.style.opacity=nextOpacity.toFixed(3);
+  // The incoming card stays soft while behind the current card, then
+  // comes into focus as it arrives. The final card remains crisp.
+  var previewBlur=3.8*(1-smooth((p-.13)/.78));
+  s.backCard.style.filter="blur("+previewBlur.toFixed(2)+"px)";
   // Remove the artificial zoom-out/zoom-in: preserve text size under perspective.
   var backZ=-55*(1-p),perspective=1150;
   var backComp=(perspective-backZ)/perspective;
@@ -155,6 +167,7 @@
    var curveZ=rz*(Math.cos(latitudeLongitude)-.62)*globe;
    var spread=u*19*globe;
    var isNew=!!a.side;
+   if(isNew)a.content.style.filter="blur("+previewBlur.toFixed(2)+"px)";
    var baseX=isNew?entering:follow;
    var spin=sign*(isNew?-125*(1-p):125*p);
    var yaw=spin+u*44*globe;

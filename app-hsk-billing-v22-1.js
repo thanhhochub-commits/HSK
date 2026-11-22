@@ -603,110 +603,31 @@ function rate(id,grade){var r=state.reviews[id]||{interval:0,repetitions:0};if(g
 /* Flashcard V29: replicate the vertical 3D launcher-column transition in reference video. */
 
 /* V30: tap reveals the answer; only swipe triggers the 3D ribbon transition. */
-var flashTurnBusy=false,flashDrag=null,flashSuppressClickUntil=0;
+/* V31: a tap only reveals the answer; left/right navigation uses a cylindrical 3D mesh. */
+var flashDrag=null,flashSuppressClickUntil=0;
 function flashCurrentWord(){
- var arr=flashWords();
- return arr.length?arr[((flashIndex%arr.length)+arr.length)%arr.length]:null;
+ var words=flashWords();
+ return words.length?words[((flashIndex%words.length)+words.length)%words.length]:null;
 }
 function flashAdvance(){flashIndex++;flipped=false;render();}
+function flashIsBusy(){return !!(window.HSKFragmentRoll&&window.HSKFragmentRoll.isActive());}
 function flipFlashcard(){
- if(flashTurnBusy)return;
+ if(flashIsBusy())return;
  flipped=!flipped;
  render();
 }
 function flashMove(direction){
- if(flashTurnBusy)return;
+ if(flashIsBusy())return;
  var word=flashCurrentWord();
  if(!word)return;
- var previous=document.querySelector(".flash-layout > .flash-central");
- if(!previous){
-  if(direction==="left")rate(word.id,"again");
-  else flashAdvance();
-  return;
- }
- var before=previous.innerHTML,oldHeight=previous.offsetHeight;
- previous.classList.remove("flash-dragging");
- previous.style.transform="";
- previous.style.opacity="";
- previous.style.removeProperty("--flash-left-opacity");
- previous.style.removeProperty("--flash-right-opacity");
- flashTurnBusy=true;
  flashDrag=null;
- try{
+ var next=function(){
   if(direction==="left")rate(word.id,"again");
   else flashAdvance();
- }catch(err){flashTurnBusy=false;throw err;}
- var card=document.querySelector(".flash-layout > .flash-central");
- if(!card){flashTurnBusy=false;return;}
- var width=card.offsetWidth,height=Math.max(card.offsetHeight,oldHeight);
- if(width<1||height<1){flashTurnBusy=false;return;}
- var after=card.innerHTML;
- card.style.minHeight=height+"px";
- card.classList.add("flash-v30-active");
- var stage=document.createElement("div");
- stage.className="flash-v30-stage";
- stage.setAttribute("aria-hidden","true");
- var count=7,cw=width/count,sign=direction==="left"?-1:1;
- for(var i=0;i<count;i++){
-  var x=i*cw,strip=document.createElement("div");
-  strip.className="flash-v30-slice";
-  strip.style.left=x+"px";
-  strip.style.width=(i===count-1?width-x:cw+.5)+"px";
-  strip.style.zIndex=String(count-i);
-  for(var faceNo=0;faceNo<2;faceNo++){
-   var face=document.createElement("div");
-   face.className="flash-v30-surface "+(faceNo?"back":"front");
-   var inner=document.createElement("div");
-   inner.className="flash-v30-inner";
-   inner.style.left=(-x)+"px";
-   inner.style.width=width+"px";
-   inner.style.height=height+"px";
-   inner.innerHTML=faceNo?after:before;
-   face.appendChild(inner);
-   strip.appendChild(face);
-  }
-  stage.appendChild(strip);
- }
- card.appendChild(stage);
- var done=false;
- function finish(){
-  if(done)return;
-  done=true;
-  if(stage.isConnected)stage.remove();
-  if(card.isConnected){
-   card.classList.remove("flash-v30-active");
-   card.style.minHeight="";
-  }
-  flashTurnBusy=false;
- }
- function animateStrips(){
-  if(!stage.isConnected){finish();return;}
-  var promises=[];
-  for(var k=0;k<count;k++){
-   var slice=stage.children[k],drift=sign*(17+(k%3)*4);
-   var frames=[
-    {offset:0,transform:"translate3d(0,0,0) rotateY(0deg) scaleX(1)"},
-    {offset:.2,transform:"translate3d("+(drift*.34)+"px,-2px,25px) rotateY("+(-22*sign)+"deg) scaleX(.94)"},
-    {offset:.49,transform:"translate3d("+drift+"px,-6px,130px) rotateY("+(-88*sign)+"deg) scaleX(.73)"},
-    {offset:.76,transform:"translate3d("+(drift*.42)+"px,-4px,60px) rotateY("+(-145*sign)+"deg) scaleX(.91)"},
-    {offset:1,transform:"translate3d(0,0,0) rotateY("+(-180*sign)+"deg) scaleX(1)"}
-   ];
-   var delay=(direction==="left"?count-1-k:k)*75;
-   if(typeof slice.animate==="function"){
-    var motion=slice.animate(frames,{
-     duration:850,delay:delay,easing:"cubic-bezier(.15,.72,.22,1)",fill:"both"
-    });
-    promises.push(motion.finished.catch(function(){return null;}));
-   }else{
-    slice.classList.add("flash-v30-fallback");
-    slice.style.animationDelay=delay+"ms";
-   }
-  }
-  if(promises.length===count)Promise.all(promises).then(finish,finish);
- }
- if(typeof requestAnimationFrame==="function")requestAnimationFrame(animateStrips);
- else animateStrips();
- setTimeout(finish,1800);
+ };
+ if(window.HSKFragmentRoll&&typeof window.HSKFragmentRoll.start==="function")
+  window.HSKFragmentRoll.start(next,direction);
+ else next();
 }
 function flashDragReset(drag){
  if(!drag||!drag.card||!drag.card.isConnected)return;
@@ -719,12 +640,12 @@ function flashDragReset(drag){
 }
 document.addEventListener("pointerdown",function(e){
  var card=e.target.closest&&e.target.closest(".flash-central");
- if(!card||flashTurnBusy||urlPage()!=="flashcards"||!e.isPrimary||(e.pointerType==="mouse"&&e.button!==0))return;
+ if(!card||flashIsBusy()||urlPage()!=="flashcards"||!e.isPrimary||(e.pointerType==="mouse"&&e.button!==0))return;
  flashDrag={card:card,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,active:false};
 });
 document.addEventListener("pointermove",function(e){
  var d=flashDrag;
- if(!d||d.pointerId!==e.pointerId||flashTurnBusy||!d.card.isConnected)return;
+ if(!d||d.pointerId!==e.pointerId||flashIsBusy()||!d.card.isConnected)return;
  var dx=e.clientX-d.startX,dy=e.clientY-d.startY;
  if(!d.active){
   if(Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)*1.25){flashDrag=null;return;}

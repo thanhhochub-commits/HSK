@@ -17,6 +17,7 @@
   var s=scene;scene=null;
   if(!s)return;
   if(s.viewport.isConnected)s.viewport.remove();
+  if(s.swipeBadge&&s.swipeBadge.isConnected)s.swipeBadge.remove();
   if(s.card.isConnected){s.card.classList.remove("hsk-v38-card-hidden");s.card.style.minHeight="";}
   if(s.layout.isConnected)s.layout.classList.remove("hsk-v38-host");
   document.documentElement.classList.remove("hsk-v38-lock-x");
@@ -81,23 +82,23 @@
     pieces.push({node:ribbon,clip:clip,side:side,i:i,x:x+pw/2-width/2});
    }
   }
-  // Direction labels live above the 3D scene instead of inside the ribbons.
-  // They cannot disappear behind the openings or become sliced into fragments.
-  var feedback=document.createElement("div");
-  feedback.className="hsk-v38-feedback";
-  feedback.setAttribute("aria-hidden","true");
-  var labelLeft=document.createElement("span");
-  labelLeft.className="hsk-v38-feedback-label hsk-v38-feedback-left";
-  labelLeft.textContent="← Chưa nhớ";
-  var labelRight=document.createElement("span");
-  labelRight.className="hsk-v38-feedback-label hsk-v38-feedback-right";
-  labelRight.textContent="Tiếp theo →";
-  labelLeft.style.opacity="0";
-  labelRight.style.opacity="0";
-  feedback.appendChild(labelLeft);feedback.appendChild(labelRight);
-  viewport.appendChild(stage);viewport.appendChild(feedback);layout.appendChild(viewport);
+  // Visible swipe badge lives on document.body, outside every 3D, clipped,
+  // opacity or visibility-hidden parent. It is never part of a rotating strip.
+  var swipeBadge=document.createElement("div");
+  swipeBadge.className="hsk-v38-swipe-badge";
+  swipeBadge.setAttribute("aria-hidden","true");
+  swipeBadge.textContent=direction==="left"?"← Chưa nhớ":"Tiếp theo →";
+  swipeBadge.style.cssText="position:fixed;display:block;z-index:2147483646;"+
+   "pointer-events:none;left:50%;top:40px;transform:translateX(-50%);"+
+   "opacity:0;visibility:hidden;padding:11px 19px;border-radius:14px;"+
+   "border:2px solid;white-space:nowrap;text-align:center;"+
+   "font:800 17px/1.4 'Be Vietnam Pro',sans-serif;"+
+   "box-shadow:0 8px 24px rgba(18,54,35,.23);"+
+   "transition:opacity 65ms linear;";
+  document.body.appendChild(swipeBadge);
+  viewport.appendChild(stage);layout.appendChild(viewport);
   scene={card:card,layout:layout,viewport:viewport,stage:stage,orb:orb,
-   back:back,feedbackLeft:labelLeft,feedbackRight:labelRight,
+   back:back,swipeBadge:swipeBadge,
    pieces:pieces,count:count,width:width,height:height,
    direction:direction,progress:0,dragX:0,status:"drag"};
   draw(scene,0,0);
@@ -106,13 +107,21 @@
  function draw(s,p,dx){
   if(!s||!s.viewport.isConnected)return;
   p=clamp(p,0,1);dx=Number(dx)||0;s.progress=p;s.dragX=dx;
-  // Show the gesture meaning during drag and during committed completion.
-  // An incomplete swipe fades the label out as the card springs back.
-  var reveal=smooth((Math.abs(dx)-5)/Math.min(72,s.width*.22));
-  var feedbackOpacity=clamp(.15+.85*reveal,0,1);
-  if(Math.abs(dx)<5)feedbackOpacity=0;
-  s.feedbackLeft.style.opacity=s.direction==="left"?feedbackOpacity.toFixed(3):"0";
-  s.feedbackRight.style.opacity=s.direction==="right"?feedbackOpacity.toFixed(3):"0";
+  // Body-level feedback is guaranteed to remain above the clipped 3D stage.
+  // The label is visible while dragging, not only after swipe completion.
+  var reveal=smooth((Math.abs(dx)-8)/Math.min(72,s.width*.21));
+  var feedbackOpacity=clamp(.58+.42*reveal,0,1);
+  var showBadge=Math.abs(dx)>=10;
+  var badge=s.swipeBadge;
+  var rect=s.card.getBoundingClientRect();
+  badge.textContent=s.direction==="left"?"← Chưa nhớ":"Tiếp theo →";
+  badge.style.left=(rect.left+rect.width*.5).toFixed(2)+"px";
+  badge.style.top=Math.max(8,rect.top+Math.min(42,rect.height*.12)).toFixed(2)+"px";
+  badge.style.backgroundColor=s.direction==="left"?"#fff1d9":"#e2fff0";
+  badge.style.color=s.direction==="left"?"#8c4608":"#056844";
+  badge.style.borderColor=s.direction==="left"?"#e7a04b":"#45b788";
+  badge.style.visibility=showBadge?"visible":"hidden";
+  badge.style.opacity=showBadge?feedbackOpacity.toFixed(3):"0";
   var sign=s.direction==="left"?-1:1;
   var globe=Math.pow(Math.max(0,Math.sin(Math.PI*p)),.8);
   var rx=s.width*.53,rz=Math.min(s.width*.255,s.height*.42);

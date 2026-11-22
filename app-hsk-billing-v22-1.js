@@ -604,6 +604,7 @@ function rate(id,grade){var r=state.reviews[id]||{interval:0,repetitions:0};if(g
 
 /* V30: tap reveals the answer; only swipe triggers the 3D ribbon transition. */
 /* V31: a tap only reveals the answer; left/right navigation uses a cylindrical 3D mesh. */
+/* V34: interaction handlers. The roll follows each move and settles with velocity. */
 var flashDrag=null,flashSuppressClickUntil=0;
 function flashCurrentWord(){
  var words=flashWords();
@@ -611,6 +612,39 @@ function flashCurrentWord(){
 }
 function flashAdvance(){flashIndex++;flipped=false;render();}
 function flashIsBusy(){return !!(window.HSKFragmentRoll&&window.HSKFragmentRoll.isActive());}
+function flashPreviewWord(direction){
+ var level=hskVocabLevel(state.level||1);
+ var imported=HSK_IMPORTED_WORDS.filter(function(w){return w.level===level;});
+ var source=imported.length?imported:W.filter(function(w){return w.level===state.level;});
+ if(billingGate())source=source.filter(function(w){return w.free;});
+ if(!source.length)return null;
+ var list;
+ if(direction==="left"){
+  var current=flashCurrentWord(),now=Date.now();
+  var due=source.filter(function(w){
+   if(current&&w.id===current.id)return false;
+   return !state.reviews[w.id]||state.reviews[w.id].next<=now;
+  });
+  list=due.length?due:source;
+ }else list=flashWords();
+ if(!list.length)return null;
+ var nextIndex=flashIndex+1;
+ return list[((nextIndex%list.length)+list.length)%list.length];
+}
+function flashPreviewHTML(direction){
+ var w=flashPreviewWord(direction);
+ if(!w)return "";
+ return '<span class="flash-level badge">'+hskVocabLabel(w.level)+'</span>'
+  +'<span class="flash-swipe-tag flash-swipe-tag-left" aria-hidden="true">← Chưa nhớ</span>'
+  +'<span class="flash-swipe-tag flash-swipe-tag-right" aria-hidden="true">Tiếp theo →</span>'
+  +'<div class="hanzi">'+esc(w.h)+'</div>'
+  +'<div class="hint-text">Bạn có nhớ nghĩa và cách đọc của từ này?</div>'
+  +'<div class="hint">Chạm để xem đáp án</div>';
+}
+function flashCommit(direction,wordId){
+ if(direction==="left")rate(wordId,"again");
+ else flashAdvance();
+}
 function flipFlashcard(){
  if(flashIsBusy())return;
  flipped=!flipped;
@@ -618,16 +652,14 @@ function flipFlashcard(){
 }
 function flashMove(direction){
  if(flashIsBusy())return;
- var word=flashCurrentWord();
- if(!word)return;
+ var w=flashCurrentWord();
+ if(!w)return;
  flashDrag=null;
- var next=function(){
-  if(direction==="left")rate(word.id,"again");
-  else flashAdvance();
- };
- if(window.HSKFragmentRoll&&typeof window.HSKFragmentRoll.start==="function")
-  window.HSKFragmentRoll.start(next,direction);
- else next();
+ var callback=function(){flashCommit(direction,w.id);};
+ var engine=window.HSKFragmentRoll;
+ if(engine&&typeof engine.trigger==="function")
+  engine.trigger(direction,flashPreviewHTML,callback);
+ else callback();
 }
 function flashDragReset(drag){
  if(!drag||!drag.card||!drag.card.isConnected)return;
@@ -639,42 +671,70 @@ function flashDragReset(drag){
  card.style.removeProperty("--flash-right-opacity");
 }
 document.addEventListener("pointerdown",function(e){
- var card=e.target.closest&&e.target.closest(".flash-central");
- if(!card||flashIsBusy()||urlPage()!=="flashcards"||!e.isPrimary||(e.pointerType==="mouse"&&e.button!==0))return;
- flashDrag={card:card,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,active:false};
+ var card=e.target.closest&&e.target.closest(".flash-layout > .flash-central");
+ if(!card||flashIsBusy()||urlPage()!=="flashcards"||!e.isPrimary||
+   (e.pointerType==="mouse"&&e.button!==0))return;
+ flashDrag={card:card,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,
+  lastX:e.clientX,lastTime:e.timeStamp,velocity:0,active:false};
 });
 document.addEventListener("pointermove",function(e){
  var d=flashDrag;
- if(!d||d.pointerId!==e.pointerId||flashIsBusy()||!d.card.isConnected)return;
+ if(!d||d.pointerId!==e.pointerId||!d.card.isConnected)return;
  var dx=e.clientX-d.startX,dy=e.clientY-d.startY;
  if(!d.active){
   if(Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)*1.25){flashDrag=null;return;}
-  if(Math.abs(dx)<10||Math.abs(dx)<=Math.abs(dy)*1.25)return;
+  if(Math.abs(dx)<10||Math.abs(dx)<=Math.abs(dy)*1.15)return;
   d.active=true;
   d.card.classList.add("flash-dragging");
   try{d.card.setPointerCapture(e.pointerId);}catch(err){}
  }
  if(e.cancelable)e.preventDefault();
- var amount=Math.max(-14,Math.min(14,dx*0.09));
- d.card.style.transform="translate3d("+amount+"px,0,0)";
- d.card.style.opacity="1";
- d.card.style.setProperty("--flash-left-opacity",String(Math.min(1,Math.max(0,-dx)/115)));
- d.card.style.setProperty("--flash-right-opacity",String(Math.min(1,Math.max(0,dx)/115)));
+ var dt=e.timeStamp-d.lastTime;
+ if(dt>0&&dt<180){
+  var instant=(e.clientX-d.lastX)/dt;
+  d.velocity=d.velocity*.55+instant*.45;
+ }
+ d.lastX=e.clientX;
+ d.lastTime=e.timeStamp;
+ var engine=window.HSKFragmentRoll;
+ if(engine&&typeof engine.drag==="function"){
+  engine.drag(dx,flashPreviewHTML);
+ }else{
+  d.card.style.transform="translate3d("+Math.max(-22,Math.min(22,dx*.12))+"px,0,0)";
+ }
 },{passive:false});
 document.addEventListener("pointerup",function(e){
  var d=flashDrag;
  if(!d||d.pointerId!==e.pointerId)return;
  flashDrag=null;
  if(!d.active)return;
- flashSuppressClickUntil=Date.now()+350;
+ flashSuppressClickUntil=Date.now()+500;
  var dx=e.clientX-d.startX;
- var threshold=Math.min(90,Math.max(55,d.card.clientWidth*0.18));
- if(Math.abs(dx)>=threshold)flashMove(dx<0?"left":"right");
- else flashDragReset(d);
+ var endDt=e.timeStamp-d.lastTime;
+ var velocity=endDt>100?0:d.velocity;
+ var predicted=dx+velocity*140;
+ var width=d.card.offsetWidth;
+ var threshold=Math.min(105,Math.max(60,width*.16));
+ var commit=Math.abs(predicted)>=threshold&&(Math.abs(dx)>=24||Math.abs(velocity)>=.65);
+ var direction=(Math.abs(dx)>8?dx:velocity)<0?"left":"right";
+ var w=flashCurrentWord();
+ var engine=window.HSKFragmentRoll;
+ if(engine&&typeof engine.release==="function"&&engine.isActive()){
+  if(typeof engine.drag==="function"&&Math.abs(dx)>1)engine.drag(dx,flashPreviewHTML);
+  engine.release(commit,velocity,commit&&w?function(){flashCommit(direction,w.id);}:null);
+ }else{
+  flashDragReset(d);
+  if(commit&&w)flashCommit(direction,w.id);
+ }
 });
 document.addEventListener("pointercancel",function(e){
  var d=flashDrag;
- if(d&&d.pointerId===e.pointerId){flashDrag=null;flashDragReset(d);}
+ if(d&&d.pointerId===e.pointerId){
+  flashDrag=null;
+  var engine=window.HSKFragmentRoll;
+  if(engine&&engine.isActive()&&typeof engine.cancel==="function")engine.cancel();
+  flashDragReset(d);
+ }
 });
 function normalizeHan(s){return String(s||"").replace(/[\s\u3000.,!?，。？！；;：:（）()"'“”‘’]/g,"").toLowerCase();}
 function checkListen(reveal){var l=LISTEN[listenIndex],v=document.getElementById("dictationInput");var typed=v?v.value:"";var correct=normalizeHan(typed)===normalizeHan(l.h);if(reveal){listenFeedback='<div class="feedback"><b>Đáp án:</b> '+l.h+'<br>'+esc(l.p)+'<br>'+esc(l.v)+'</div>';}else if(!typed.trim()){listenFeedback='<div class="feedback error">Bạn cần nhập câu nghe được trước khi kiểm tra.</div>';}else{listenFeedback='<div class="feedback '+(correct?"":"error")+'"><b>'+(correct?"Chính xác! +15 XP":"Chưa trùng khớp, thử nghe lại.")+'</b><br>'+(correct?"Tốt lắm, bạn đã nghe đúng cả câu.":"Đáp án: "+l.h+"<br>"+esc(l.v))+'</div>';if(correct)earn(15,"listened");}var box=document.getElementById("listeningFeedback");if(box)box.innerHTML=listenFeedback;}

@@ -623,8 +623,11 @@ function flashTurn(update){
   piece.className="flash-roll-piece";
   piece.style.top=y+"px";
   piece.style.height=(i===segments-1?h-y:step+0.5)+"px";
-  piece.style.animationDelay=(55*i)+"ms";
+  piece.style.animationDelay=(58*i)+"ms";
   piece.style.zIndex=String(segments-i);
+  var spread=Math.round(Math.min(25,Math.max(12,w*.03)));
+  piece.style.setProperty("--piece-x",(i%2===0?-spread:spread)+"px");
+  piece.style.setProperty("--piece-back-x",(i%2===0?Math.round(spread*.45):-Math.round(spread*.45))+"px");
   for(var side=0;side<2;side++){
    var face=document.createElement("div");
    face.className="flash-roll-side "+(side?"flash-roll-rear":"flash-roll-front");
@@ -644,7 +647,7 @@ function flashTurn(update){
   if(stage.isConnected)stage.remove();
   if(card.isConnected){card.classList.remove("flash-turn-playing");card.style.minHeight="";}
   flashTurnBusy=false;
- },1180);
+ },1260);
 }
 function flipFlashcard(){flashTurn(function(){flipped=!flipped;render();});}
 function flashMove(direction){

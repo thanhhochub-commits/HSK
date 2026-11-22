@@ -1,0 +1,81 @@
+/* HSK Panda V29 - five vertical 3D rolling columns matching the supplied video. */
+.flash-layout > .flash-central.flash-column-active{
+ position:relative;
+ isolation:isolate;
+ overflow:visible!important;
+ transform:none!important;
+ opacity:1!important;
+ pointer-events:none;
+}
+.flash-layout > .flash-central.flash-column-active > :not(.flash-column-stage){
+ visibility:hidden!important;
+}
+.flash-layout .flash-column-stage{
+ position:absolute;
+ inset:0;
+ z-index:80;
+ pointer-events:none;
+ perspective:950px;
+ transform-style:preserve-3d;
+ overflow:visible;
+}
+.flash-layout .flash-column-piece{
+ position:absolute;
+ top:0;
+ height:100%;
+ transform-origin:50% 50%;
+ transform-style:preserve-3d;
+ will-change:transform;
+ backface-visibility:visible;
+}
+.flash-layout .flash-column-face{
+ position:absolute;
+ inset:0;
+ overflow:hidden;
+ backface-visibility:hidden;
+ -webkit-backface-visibility:hidden;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ border-left:1px solid rgba(152,195,172,.26);
+ border-right:1px solid rgba(152,195,172,.26);
+ box-shadow:inset 10px 0 14px rgba(18,73,43,.06),6px 4px 16px rgba(13,73,61,.14);
+}
+.flash-layout .flash-column-face.rear{
+ transform:rotateY(180deg);
+}
+.flash-layout .flash-central.flash-column-content{
+ position:absolute;
+ top:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ flex-direction:column;
+ text-align:center;
+ min-height:0!important;
+ max-height:none!important;
+ margin:0;
+ padding:45px 30px;
+ border:0!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ overflow:hidden;
+ pointer-events:none;
+ opacity:1!important;
+ transform:none!important;
+ transition:none!important;
+ will-change:auto;
+}
+.flash-layout .flash-column-content .flash-swipe-tag{display:none!important}
+@keyframes flash-column-fallback-turn{
+ 0%{transform:translate3d(0,0,0) rotateY(0deg)}
+ 28%{transform:translate3d(7px,0,23px) rotateY(-30deg)}
+ 52%{transform:translate3d(24px,0,97px) rotateY(-92deg)}
+ 80%{transform:translate3d(10px,0,25px) rotateY(-151deg)}
+ 100%{transform:translate3d(0,0,0) rotateY(-180deg)}
+}
+.flash-layout .flash-column-fallback{
+ animation:flash-column-fallback-turn 730ms cubic-bezier(.22,.72,.24,1) both;
+}
+@media(max-width:560px){
+ .flash-layout .flash-central.flash-column-content{padding:44px 20px}
+}

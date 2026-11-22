@@ -66,7 +66,7 @@ jobs:
           for(const s of scripts)vm.runInNewContext(fs.readFileSync(root+s,'utf8'),global,{filename:s});
           const raw=window.HSK_VOCAB_IMPORTED;
           assert(raw.length>=11000,'at least 11k raw rows');
-          assert.equal(window.HSK_VOCAB_CORRECTIONS.length,93);
+          assert.equal(window.HSK_VOCAB_CORRECTIONS.length,111);
           vm.runInNewContext(fs.readFileSync(root+'app-hsk-billing-v21.js','utf8'),global,{filename:'app-hsk-billing-v21.js'});
           const expected={1:300,2:273,3:507,4:1000,5:1600,6:1800,79:5600};
           const meta={};

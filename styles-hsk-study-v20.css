@@ -1,0 +1,56 @@
+/* HSK Panda 2.0. Inline topic lessons across the existing learning modules. */
+.study-level-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
+.study-level-tab{font:inherit;cursor:pointer;border:1px solid #d6e8dd;border-radius:999px;padding:9px 14px;background:white;color:#19614b;font-weight:750;min-width:71px;transition:background .15s,color .15s}
+.study-level-tab:hover{border-color:#07946e;background:#effbf4}
+.study-level-tab.active{background:linear-gradient(120deg,#13a978,#067a59);color:white;border-color:transparent;box-shadow:0 5px 15px rgba(5,139,101,.15)}
+.study-level-summary{padding:21px 25px;margin:18px 0 18px;border-radius:16px;background:linear-gradient(110deg,#e7f8ee,#f7fff9);border:1px solid #d8efdf}
+.study-level-summary>div:first-child>span{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;color:#0c8060}
+.study-level-summary h2{margin:5px 0;font-size:20px;color:#103f31}
+.study-level-summary p{margin:3px 0 13px;color:#58756a;font-size:12px}
+.study-level-summary .bar{max-width:100%;height:8px}
+.study-roadmap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-bottom:22px}
+.study-step{padding:19px 20px;display:flex;flex-direction:column;gap:8px;min-height:210px}
+.study-step h3{font-size:17px;margin:7px 0 3px;line-height:1.55}
+.study-step p{font-size:12px;color:#536d61;margin:0}
+.study-step .btn{margin-top:auto}
+.study-step-meta{font-size:11px;color:#658477;margin-top:7px;margin-bottom:13px}
+.study-step-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.study-pill{background:#e9f7ee;border-radius:999px;font-size:10.5px;white-space:nowrap;padding:5px 10px;color:#0e7556;font-weight:800}
+.study-pill.completed{background:#d9f3e5;color:#075d43}
+.study-lesson-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.study-lesson-head .btn{margin-left:auto}
+.study-lesson-layout{display:grid;grid-template-columns:1.4fr 1fr;gap:15px;margin-bottom:16px}
+.study-lesson-section{padding:21px 23px;margin-bottom:16px}
+.study-lesson-layout .study-lesson-section{margin-bottom:0}
+.study-lesson-section h2,.study-selector h2{font-size:16px;margin:0 0 13px}
+.study-dialogue{border-top:1px solid #eaf1e9;padding:12px 0}
+.study-dialogue-line{display:flex;gap:15px;align-items:center;justify-content:space-between}
+.study-dialogue-line strong{font-size:16px;color:#124d3a}
+.study-dialogue>p{font-size:12px;color:#607b6e;margin:6px 0 0}
+.study-pattern{font-size:18px;font-weight:850;color:#0b815d;line-height:1.65;background:#edf9f1;border-radius:11px;padding:13px 15px}
+.study-lesson-section>p{line-height:1.75}
+.study-section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.study-section-heading>span{font-size:12px;color:#749084}
+.study-word-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:15px 0}
+.study-word-card{border:1px solid #e0ebe4;background:#fbfffc;border-radius:12px;padding:15px 14px;min-height:120px;display:flex;flex-direction:column}
+.study-word-card b{font-size:26px;color:#123d32;font-weight:750}
+.study-word-card span{font-size:12px;color:#0c8261;margin-top:4px}
+.study-word-card p{font-size:12px;color:#557063;margin:5px 0}
+.study-shortcuts{display:flex;flex-wrap:wrap;gap:10px;margin-top:17px}
+.study-quiz-options{display:grid;gap:8px;margin:14px 0}
+.study-quiz-options .answer{text-align:left}
+.study-selector{padding:22px 24px;margin-top:18px}
+.study-selector-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:16px}
+.study-selector-btn{display:flex;flex-direction:column;gap:4px;text-align:left;border:1px solid #e1ece5;background:#fbfffc;border-radius:12px;padding:14px 15px;cursor:pointer;color:#214e3b;font:inherit}
+.study-selector-btn:hover{background:#effaf3;border-color:#8acbac}
+.study-selector-btn b{font-size:13px}
+.study-selector-btn small{font-size:11px;color:#739082}
+@media(max-width:720px){
+.study-lesson-layout{grid-template-columns:1fr}
+.study-lesson-section,.study-selector{padding:16px}
+.study-roadmap-grid{grid-template-columns:1fr}
+.study-level-summary{padding:18px}
+.study-level-tab{padding:8px 11px;min-width:60px}
+.study-step{min-height:180px}
+.study-word-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

@@ -1,0 +1,49 @@
+/* 3D folding ribbons; each of nine segments has a true front and back */
+.flash-layout > .flash-central.flash-turn-playing{
+  isolation:isolate;overflow:visible!important;
+  transform:none!important;opacity:1!important;pointer-events:none;
+}
+.flash-layout .flash-roll-stage{
+  position:absolute;inset:0;z-index:50;pointer-events:none;
+  perspective:850px;transform-style:preserve-3d;overflow:visible;
+}
+.flash-layout .flash-roll-piece{
+  position:absolute;left:0;width:100%;padding:0;margin:0;
+  transform-origin:center center;transform-style:preserve-3d;
+  will-change:transform;
+  animation:flash-two-sided-roll 660ms cubic-bezier(.27,.61,.18,1) both;
+}
+.flash-layout .flash-roll-side{
+  position:absolute;inset:0;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:linear-gradient(145deg,#fff,#eaf9ef);
+  box-shadow:inset 0 -1.5px 2px rgba(13,80,55,.12);
+}
+.flash-layout .flash-roll-rear{
+  transform:rotateX(180deg);
+  background:linear-gradient(145deg,#eefcf3,#fff);
+}
+.flash-layout .flash-roll-front::after{
+  content:"";position:absolute;bottom:0;left:0;right:0;
+  height:7px;background:linear-gradient(transparent,rgba(18,82,48,.16));
+  pointer-events:none;
+}
+.flash-layout .flash-central.flash-roll-content{
+  position:absolute;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;
+  min-height:0!important;max-height:none!important;
+  box-sizing:border-box;margin:0;padding:45px 30px;
+  border:0!important;border-radius:0;
+  background:linear-gradient(145deg,#fff,#eaf9ef);
+  box-shadow:none!important;transform:none!important;
+  opacity:1!important;transition:none!important;
+  overflow:hidden;pointer-events:none;cursor:default;will-change:auto;
+}
+.flash-layout .flash-roll-content .flash-swipe-tag{display:none!important}
+@keyframes flash-two-sided-roll{
+  0%{transform:rotateX(0deg) translate3d(0,0,0)}
+  43%{transform:rotateX(-85deg) translate3d(0,0,15px)}
+  100%{transform:rotateX(-180deg) translate3d(0,0,0)}
+}
+@media(max-width:560px){.flash-layout .flash-central.flash-roll-content{padding:44px 20px}}
+@media(prefers-reduced-motion:reduce){.flash-layout .flash-roll-piece{animation:none!important}}

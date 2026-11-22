@@ -403,7 +403,23 @@ function flashWords(){
  return due.length?due:source;
 }
 
-function flashPage(){var arr=flashWords(),w=arr[((flashIndex%arr.length)+arr.length)%arr.length];if(!w)return head("Flashcard","Chưa có từ nào.");return head("Flashcard + SRS 🧠","Ôn thẻ theo cấp HSK đang học. Toàn bộ Flashcard được mở miễn phí trong giai đoạn thử nghiệm.")+studyLevelsBar()+'<div class="flash-layout"><div class="flash-count">Thẻ cần ôn: '+arr.length+' · '+(Math.abs(flashIndex)%arr.length+1)+' / '+arr.length+'</div><div class="flash-central" role="button" tabindex="0" data-action="flip"><span class="flash-level badge">'+hskVocabLabel(w.level)+'</span><div class="hanzi">'+w.h+'</div>'+(flipped?'<div class="pinyin">'+esc(w.p)+'</div><div class="meaning">'+esc(w.v)+'</div><p class="example-line">'+w.ex+'</p>':'<div class="hint-text">Bạn có nhớ nghĩa và cách đọc của từ này?</div>')+'<div class="hint">'+(flipped?"Đánh giá mức độ ghi nhớ bên dưới":"Chạm để lật thẻ xem đáp án")+'</div></div><div class="flash-controls"><button class="btn secondary" data-action="speak" data-id="'+w.id+'">'+ic("audio")+' Nghe từ</button>'+button("Từ tiếp theo "+ic("arrow"),"nextflash","","outline")+'</div>'+(flipped?'<div class="flash-controls">'+button("Chưa nhớ", "rate",'data-id="'+w.id+'" data-grade="again"',"orange")+button("Đã nhớ", "rate",'data-id="'+w.id+'" data-grade="good"',"secondary")+button("Rất dễ","rate",'data-id="'+w.id+'" data-grade="easy"',"")+'</div>':'<div class="flash-controls">'+button("Lật thẻ để kiểm tra","flip","","")+'</div>')+'<div class="notice">Lịch ôn được lưu trong trình duyệt. Phiên bản thử nghiệm dùng lịch đơn giản theo mức độ nhớ, chưa phải thuật toán FSRS được hiệu chuẩn từ dữ liệu cá nhân.</div></div>';}
+function flashPage(){
+ var arr=flashWords(),w=arr[((flashIndex%arr.length)+arr.length)%arr.length];
+ if(!w)return head("Flashcard","Chưa có từ nào.");
+ return head("Flashcard + SRS 🧠","Ôn thẻ theo cấp HSK đang học. Toàn bộ Flashcard được mở miễn phí trong giai đoạn thử nghiệm.")+studyLevelsBar()
+  +'<div class="flash-layout"><div class="flash-count">Thẻ cần ôn: '+arr.length+' · '+(Math.abs(flashIndex)%arr.length+1)+' / '+arr.length+'</div>'
+  +'<div class="flash-central" role="button" tabindex="0" data-action="flip" aria-label="Chạm để lật, vuốt trái để ghi nhận chưa nhớ, vuốt phải để chuyển thẻ">'
+  +'<span class="flash-level badge">'+hskVocabLabel(w.level)+'</span>'
+  +'<span class="flash-swipe-tag flash-swipe-tag-left" aria-hidden="true">← Chưa nhớ</span>'
+  +'<span class="flash-swipe-tag flash-swipe-tag-right" aria-hidden="true">Tiếp theo →</span>'
+  +'<div class="hanzi">'+esc(w.h)+'</div>'
+  +(flipped?'<div class="pinyin">'+esc(w.p)+'</div><div class="meaning">'+esc(w.v)+'</div><p class="example-line">'+w.ex+'</p>':'<div class="hint-text">Bạn có nhớ nghĩa và cách đọc của từ này?</div>')
+  +'<div class="hint">'+(flipped?"Vuốt trái hoặc phải để tiếp tục":"Chạm để lật thẻ xem đáp án")+'</div></div>'
+  +'<div class="flash-controls flash-audio">'+button(ic("audio")+" Nghe từ","speak",'data-id="'+w.id+'"',"secondary")+'</div>'
+  +'<div class="flash-swipe-actions">'+button("← Chưa nhớ","flashAgain",'data-id="'+w.id+'"',"flash-again")+button("Tiếp theo →","nextflash","","flash-next")+'</div>'
+  +'<p class="flash-swipe-help">Vuốt trái: Chưa nhớ · Vuốt phải: Tiếp theo · Chạm thẻ để lật</p>'
+  +'<div class="notice">Lịch ôn được lưu trong trình duyệt. Phiên bản thử nghiệm dùng lịch đơn giản theo mức độ nhớ, chưa phải thuật toán FSRS được hiệu chuẩn từ dữ liệu cá nhân.</div></div>';
+}
 function studyPracticeWord(){
  var words=studyWordPool(state.level).filter(function(w){return !billingGate()||w.free||w.id<8;});
  var pool=words.length?words:W;
@@ -578,6 +594,82 @@ function render(){var page=urlPage(),html=navHtml(page)+ '<div class="main">'+to
 function say(text,speed){if(!("speechSynthesis" in window)){alert("Trình duyệt này chưa hỗ trợ phát âm tự động.");return;}try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang="zh-CN";u.rate=speed||.88;var list=speechSynthesis.getVoices();var voice=list.find(function(v){return /zh[-_]CN/i.test(v.lang);})||list.find(function(v){return /^zh/i.test(v.lang);});if(voice)u.voice=voice;speechSynthesis.speak(u);}catch(e){alert("Không thể phát âm trên thiết bị này.");}}
 function markLearn(id){if(state.learned.indexOf(id)>=0)return;state.learned.push(id);earn(10,"learned");render();}
 function rate(id,grade){var r=state.reviews[id]||{interval:0,repetitions:0};if(grade==="again"){r.interval=1/1440;r.repetitions=0;}else if(grade==="good"){r.repetitions++;r.interval=r.repetitions===1?1:Math.round(Math.max(2,r.interval*2.1));}else{r.repetitions++;r.interval=r.repetitions===1?3:Math.round(Math.max(4,r.interval*2.7));}r.next=Date.now()+r.interval*86400000;state.reviews[id]=r;if(state.learned.indexOf(id)<0)state.learned.push(id);earn(grade==="again"?1:7,"reviewed");flipped=false;flashIndex++;render();}
+var flashDrag=null,flashSwipeBusy=false,flashSuppressClickUntil=0;
+function flashCurrentWord(){
+ var arr=flashWords();
+ return arr.length?arr[((flashIndex%arr.length)+arr.length)%arr.length]:null;
+}
+function flashAdvance(){flashIndex++;flipped=false;render();}
+function flashMove(direction){
+ if(flashSwipeBusy)return;
+ var w=flashCurrentWord();
+ if(!w)return;
+ flashDrag=null;
+ var card=document.querySelector(".flash-central");
+ var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ var finish=function(){
+  flashSwipeBusy=false;
+  if(direction==="left")rate(w.id,"again");
+  else flashAdvance();
+ };
+ if(!card||reduce){finish();return;}
+ flashSwipeBusy=true;
+ card.classList.remove("flash-dragging");
+ card.classList.add("flash-swipe-exit");
+ card.style.setProperty("--flash-left-opacity",direction==="left"?"1":"0");
+ card.style.setProperty("--flash-right-opacity",direction==="right"?"1":"0");
+ card.style.transform="translate3d("+(direction==="left"?"-120%":"120%")+",0,0) rotate("+(direction==="left"?"-13deg":"13deg")+")";
+ card.style.opacity="0";
+ setTimeout(finish,190);
+}
+function flashDragReset(drag){
+ if(!drag||!drag.card||!drag.card.isConnected)return;
+ var card=drag.card;
+ card.classList.remove("flash-dragging");
+ card.style.transform="";
+ card.style.opacity="";
+ card.style.removeProperty("--flash-left-opacity");
+ card.style.removeProperty("--flash-right-opacity");
+}
+document.addEventListener("pointerdown",function(e){
+ var card=e.target.closest&&e.target.closest(".flash-central");
+ if(!card||flashSwipeBusy||urlPage()!=="flashcards"||!e.isPrimary||(e.pointerType==="mouse"&&e.button!==0))return;
+ flashDrag={card:card,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,active:false};
+});
+document.addEventListener("pointermove",function(e){
+ var d=flashDrag;
+ if(!d||d.pointerId!==e.pointerId||flashSwipeBusy||!d.card.isConnected)return;
+ var dx=e.clientX-d.startX,dy=e.clientY-d.startY;
+ if(!d.active){
+  if(Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)*1.25){flashDrag=null;return;}
+  if(Math.abs(dx)<10||Math.abs(dx)<=Math.abs(dy)*1.25)return;
+  d.active=true;
+  d.card.classList.add("flash-dragging");
+  try{d.card.setPointerCapture(e.pointerId);}catch(err){}
+ }
+ if(e.cancelable)e.preventDefault();
+ var max=d.card.clientWidth*0.85;
+ var amount=Math.max(-max,Math.min(max,dx));
+ d.card.style.transform="translate3d("+amount+"px,0,0) rotate("+(amount/20)+"deg)";
+ d.card.style.opacity=String(1-Math.min(0.3,Math.abs(amount)/800));
+ d.card.style.setProperty("--flash-left-opacity",String(Math.min(1,Math.max(0,-dx)/115)));
+ d.card.style.setProperty("--flash-right-opacity",String(Math.min(1,Math.max(0,dx)/115)));
+},{passive:false});
+document.addEventListener("pointerup",function(e){
+ var d=flashDrag;
+ if(!d||d.pointerId!==e.pointerId)return;
+ flashDrag=null;
+ if(!d.active)return;
+ flashSuppressClickUntil=Date.now()+350;
+ var dx=e.clientX-d.startX;
+ var threshold=Math.min(90,Math.max(55,d.card.clientWidth*0.18));
+ if(Math.abs(dx)>=threshold)flashMove(dx<0?"left":"right");
+ else flashDragReset(d);
+});
+document.addEventListener("pointercancel",function(e){
+ var d=flashDrag;
+ if(d&&d.pointerId===e.pointerId){flashDrag=null;flashDragReset(d);}
+});
 function normalizeHan(s){return String(s||"").replace(/[\s\u3000.,!?，。？！；;：:（）()"'“”‘’]/g,"").toLowerCase();}
 function checkListen(reveal){var l=LISTEN[listenIndex],v=document.getElementById("dictationInput");var typed=v?v.value:"";var correct=normalizeHan(typed)===normalizeHan(l.h);if(reveal){listenFeedback='<div class="feedback"><b>Đáp án:</b> '+l.h+'<br>'+esc(l.p)+'<br>'+esc(l.v)+'</div>';}else if(!typed.trim()){listenFeedback='<div class="feedback error">Bạn cần nhập câu nghe được trước khi kiểm tra.</div>';}else{listenFeedback='<div class="feedback '+(correct?"":"error")+'"><b>'+(correct?"Chính xác! +15 XP":"Chưa trùng khớp, thử nghe lại.")+'</b><br>'+(correct?"Tốt lắm, bạn đã nghe đúng cả câu.":"Đáp án: "+l.h+"<br>"+esc(l.v))+'</div>';if(correct)earn(15,"listened");}var box=document.getElementById("listeningFeedback");if(box)box.innerHTML=listenFeedback;}
 function recognize(id){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var out=document.getElementById("pronFeedback");if(!SR){out.textContent="Trình duyệt chưa hỗ trợ SpeechRecognition. Hãy dùng Chrome nếu muốn thử, hoặc chỉ luyện nghe rồi đọc lại.";return;}var rec=new SR();rec.lang="zh-CN";rec.interimResults=false;rec.maxAlternatives=1;out.textContent="Đang nghe... Hãy phát âm rõ từ mẫu.";rec.onresult=function(e){var t=e.results[0][0].transcript||"",ok=normalizeHan(t)===normalizeHan(W[id].h);out.innerHTML="Máy nhận dạng: <b>"+esc(t)+"</b>.<br>"+(ok?"Đã nhận diện đúng từ mục tiêu. Đây chưa phải điểm chấm thanh điệu.":"Chưa nhận diện đúng từ. Nghe mẫu rồi thử lại.");earn(ok?10:2,"pronounced");};rec.onerror=function(e){out.textContent="Không nhận dạng được: "+e.error+". Kiểm tra quyền micro và kết nối.";};try{rec.start();}catch(e){out.textContent="Chức năng ghi nhận giọng nói không được cấp quyền.";} }
@@ -605,8 +697,12 @@ function downloadData(){var blob=new Blob([JSON.stringify(state,null,2)],{type:"
 function importData(file){if(!file)return;var reader=new FileReader();reader.onload=function(){try{var data=JSON.parse(reader.result);if(!data||typeof data!=="object"||!Array.isArray(data.learned)||!Array.isArray(data.results))throw Error("Định dạng không hợp lệ");if(!confirm("Nhập bản sao lưu sẽ thay thế tiến độ hiện tại. Tiếp tục?"))return;state=Object.assign({},seed,data);save();go("home");alert("Đã nhập tiến độ thành công.");}catch(e){alert("Không đọc được dữ liệu hợp lệ: "+e.message);}};reader.readAsText(file);}
 document.addEventListener("input",function(e){if(e.target.id==="vocabSearch"){vocabSearch=e.target.value;vocabPageIndex=0;renderVocabResults();}});
 document.addEventListener("change",function(e){if(e.target.id==="vocabLevel"){vocabLevel=Number(e.target.value);vocabPageIndex=0;renderVocabResults();}if(e.target.id==="importFile")importData(e.target.files[0]);});
-document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.classList.contains("flash-central")){e.preventDefault();flipped=!flipped;render();}});
-document.addEventListener("click",function(e){var el=e.target.closest("[data-action]");if(!el)return;var action=el.dataset.action,id=Number(el.dataset.id),to=el.dataset.to;switch(action){
+document.addEventListener("keydown",function(e){
+ if(!e.target.classList.contains("flash-central"))return;
+ if(e.key==="Enter"||e.key===" "){e.preventDefault();flipped=!flipped;render();}
+ else if(e.key==="ArrowLeft"||e.key==="ArrowRight"){e.preventDefault();flashMove(e.key==="ArrowLeft"?"left":"right");}
+});
+document.addEventListener("click",function(e){if(Date.now()<flashSuppressClickUntil&&e.target.closest(".flash-central")){e.preventDefault();return;}var el=e.target.closest("[data-action]");if(!el)return;var action=el.dataset.action,id=Number(el.dataset.id),to=el.dataset.to;switch(action){
 case "nav":go(to);break;
 case "vocabPaginate":{var pageIndex=Number(el.dataset.page);if(pageIndex>=0){vocabPageIndex=pageIndex;renderVocabResults();}break;}
 case "studyPromptSpeak":{var questions=[
@@ -649,7 +745,8 @@ case "menu":mobileOpen=!mobileOpen;render();break;
 case "learn":markLearn(id);break;
 case "speak":say(W[id].h);break;
 case "flip":flipped=!flipped;render();break;
-case "nextflash":flashIndex++;flipped=false;render();break;
+case "flashAgain":flashMove("left");break;
+case "nextflash":flashMove("right");break;
 case "rate":rate(id,el.dataset.grade);break;
 case "level":if(id>=1&&id<=9){state.level=id;vocabLevel=hskVocabLevel(id);vocabPageIndex=0;flashIndex=0;lessonIndex=0;save();render();}break;
 case "listen":say(LISTEN[listenIndex].h,Number(el.dataset.speed)||.88);break;

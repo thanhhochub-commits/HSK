@@ -596,63 +596,94 @@ function markLearn(id){if(state.learned.indexOf(id)>=0)return;state.learned.push
 function rate(id,grade){var r=state.reviews[id]||{interval:0,repetitions:0};if(grade==="again"){r.interval=1/1440;r.repetitions=0;}else if(grade==="good"){r.repetitions++;r.interval=r.repetitions===1?1:Math.round(Math.max(2,r.interval*2.1));}else{r.repetitions++;r.interval=r.repetitions===1?3:Math.round(Math.max(4,r.interval*2.7));}r.next=Date.now()+r.interval*86400000;state.reviews[id]=r;if(state.learned.indexOf(id)<0)state.learned.push(id);earn(grade==="again"?1:7,"reviewed");flipped=false;flashIndex++;render();}
 
 
+
+/* Flashcard 3D V28: an explicit Web Animations transition that does not
+   silently disappear when system reduced-motion is enabled. */
 var flashTurnBusy=false,flashDrag=null,flashSuppressClickUntil=0;
-function flashCurrentWord(){var a=flashWords();return a.length?a[((flashIndex%a.length)+a.length)%a.length]:null;}
+function flashCurrentWord(){
+ var words=flashWords();
+ return words.length?words[((flashIndex%words.length)+words.length)%words.length]:null;
+}
 function flashAdvance(){flashIndex++;flipped=false;render();}
 function flashTurn(update){
  if(flashTurnBusy)return;
- var previous=document.querySelector(".flash-layout > .flash-central");
- var before=previous?previous.innerHTML:"";
- var previousHeight=previous?previous.offsetHeight:0;
- if(previous){previous.classList.remove("flash-dragging");previous.style.transform="";previous.style.opacity="";}
- var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ var beforeCard=document.querySelector(".flash-layout > .flash-central");
+ if(!beforeCard){update();return;}
+ beforeCard.classList.remove("flash-dragging");
+ beforeCard.style.transform="";
+ beforeCard.style.opacity="";
+ beforeCard.style.removeProperty("--flash-left-opacity");
+ beforeCard.style.removeProperty("--flash-right-opacity");
+ var previousMarkup=beforeCard.innerHTML;
+ var previousHeight=beforeCard.offsetHeight;
  flashTurnBusy=true;
- try{update();}catch(error){flashTurnBusy=false;throw error;}
+ try{update();}catch(err){flashTurnBusy=false;throw err;}
  var card=document.querySelector(".flash-layout > .flash-central");
- if(!previous||!card||reduced){flashTurnBusy=false;return;}
- var after=card.innerHTML,h=Math.max(previousHeight,card.offsetHeight),w=card.offsetWidth;
- if(!h||!w){flashTurnBusy=false;return;}
- card.style.minHeight=h+"px";
+ if(!card){flashTurnBusy=false;return;}
+ var width=card.offsetWidth,height=Math.max(previousHeight,card.offsetHeight);
+ if(width<1||height<1){flashTurnBusy=false;return;}
+ var nextMarkup=card.innerHTML;
+ card.style.minHeight=height+"px";
  card.classList.add("flash-turn-playing");
  var stage=document.createElement("div");
- stage.className="flash-roll-stage";
+ stage.className="flash-v28-stage";
  stage.setAttribute("aria-hidden","true");
- var segments=9,step=h/segments;
- for(var i=0;i<segments;i++){
-  var y=i*step,piece=document.createElement("div");
-  piece.className="flash-roll-piece";
+ var count=9,unit=height/count,animations=[];
+ for(var i=0;i<count;i++){
+  var y=i*unit;
+  var piece=document.createElement("div");
+  piece.className="flash-v28-piece";
   piece.style.top=y+"px";
-  piece.style.height=(i===segments-1?h-y:step+0.5)+"px";
-  piece.style.animationDelay=(58*i)+"ms";
-  piece.style.zIndex=String(segments-i);
-  var spread=Math.round(Math.min(25,Math.max(12,w*.03)));
-  piece.style.setProperty("--piece-x",(i%2===0?-spread:spread)+"px");
-  piece.style.setProperty("--piece-back-x",(i%2===0?Math.round(spread*.45):-Math.round(spread*.45))+"px");
+  piece.style.height=(i===count-1?height-y:unit-.8)+"px";
+  piece.style.zIndex=String(count-i);
   for(var side=0;side<2;side++){
    var face=document.createElement("div");
-   face.className="flash-roll-side "+(side?"flash-roll-rear":"flash-roll-front");
+   face.className="flash-v28-face "+(side?"back":"front");
    var content=document.createElement("div");
-   content.className="flash-central flash-roll-content";
+   content.className="flash-v28-content";
    content.style.top=(-y)+"px";
-   content.style.left="0";
-   content.style.width=w+"px";
-   content.style.height=h+"px";
-   content.innerHTML=side?after:before;
-   face.appendChild(content);piece.appendChild(face);
+   content.style.height=height+"px";
+   content.innerHTML=side?nextMarkup:previousMarkup;
+   face.appendChild(content);
+   piece.appendChild(face);
   }
   stage.appendChild(piece);
+  var x=(i%2?1:-1)*Math.min(36,20+i*1.5);
+  var frames=[
+   {offset:0,transform:"translate3d(0,0,0) rotateX(0deg) scaleY(1)"},
+   {offset:.2,transform:"translate3d("+(x*.2)+"px,-3px,24px) rotateX(-23deg) scaleY(.92)"},
+   {offset:.47,transform:"translate3d("+x+"px,-9px,125px) rotateX(-88deg) scaleY(.69)"},
+   {offset:.73,transform:"translate3d("+(x*.5)+"px,-7px,82px) rotateX(-142deg) scaleY(.83)"},
+   {offset:1,transform:"translate3d(0,0,0) rotateX(-180deg) scaleY(1)"}
+  ];
+  if(typeof piece.animate==="function"){
+   var animation=piece.animate(frames,{duration:720,delay:i*70,easing:"cubic-bezier(.2,.65,.2,1)",fill:"both"});
+   animations.push(animation.finished.catch(function(){return null;}));
+  }else{
+   piece.classList.add("flash-v28-css-fallback");
+   piece.style.animationDelay=(i*70)+"ms";
+  }
  }
  card.appendChild(stage);
- setTimeout(function(){
+ function finish(){
   if(stage.isConnected)stage.remove();
   if(card.isConnected){card.classList.remove("flash-turn-playing");card.style.minHeight="";}
   flashTurnBusy=false;
- },1260);
+ }
+ if(animations.length===count){
+  Promise.all(animations).then(finish,finish);
+  setTimeout(function(){if(flashTurnBusy&&stage.isConnected)finish();},1550);
+ }else{
+  setTimeout(finish,1300);
+ }
 }
-function flipFlashcard(){flashTurn(function(){flipped=!flipped;render();});}
+function flipFlashcard(){
+ flashTurn(function(){flipped=!flipped;render();});
+}
 function flashMove(direction){
  if(flashTurnBusy)return;
- var word=flashCurrentWord();if(!word)return;
+ var word=flashCurrentWord();
+ if(!word)return;
  flashDrag=null;
  flashTurn(function(){
   if(direction==="left")rate(word.id,"again");

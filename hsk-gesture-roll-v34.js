@@ -130,7 +130,7 @@
     var from=s.progress,to=commit?1:0;
     var speed=Math.abs(Number(velocity)||0); // px/ms
     var distance=Math.abs(to-from);
-    var duration=clamp(620/(1+speed*1.5),220,650)*Math.max(0.24,distance);
+    var duration=clamp(850/(1+speed*0.75),380,760)*Math.max(0.28,distance);
     var started=null;
     function tick(time){
       if(sceneState!==s)return;

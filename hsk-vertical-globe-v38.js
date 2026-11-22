@@ -1,4 +1,4 @@
-/* HSK Panda V38.2: softly rounded six-ribbon 3D globe with visible gaps.
+/* HSK Panda V38.5: side-anchored swipe badges, six-ribbon rounded 3D globe.
  * Each band spans the FULL card height; no horizontal slicing.
  * Pointer distance is the primary motion. The following card is visible behind the gaps.
  * The main app keeps tap as a plain answer reveal and handles SRS on committed swipes.
@@ -89,7 +89,7 @@
   swipeBadge.setAttribute("aria-hidden","true");
   swipeBadge.textContent=direction==="left"?"← Chưa nhớ":"Tiếp theo →";
   swipeBadge.style.cssText="position:fixed;display:block;z-index:2147483646;"+
-   "pointer-events:none;left:50%;top:40px;transform:translateX(-50%);"+
+   "pointer-events:none;left:0;top:0;transform:translateY(-50%);"+
    "opacity:0;visibility:hidden;padding:11px 19px;border-radius:14px;"+
    "border:2px solid;white-space:nowrap;text-align:center;"+
    "font:800 17px/1.4 'Be Vietnam Pro',sans-serif;"+
@@ -115,8 +115,14 @@
   var badge=s.swipeBadge;
   var rect=s.card.getBoundingClientRect();
   badge.textContent=s.direction==="left"?"← Chưa nhớ":"Tiếp theo →";
-  badge.style.left=(rect.left+rect.width*.5).toFixed(2)+"px";
-  badge.style.top=Math.max(8,rect.top+Math.min(42,rect.height*.12)).toFixed(2)+"px";
+  // V38.5: pin the label to the actual left/right WING of the card.
+  // Left swipe: flush against the left edge. Right swipe: flush against right.
+  // Never position the label above the central Chinese character.
+  var isLeft=s.direction==="left";
+  var edge=clamp(rect.width*.035,9,22);
+  badge.style.left=(isLeft?rect.left+edge:rect.right-edge).toFixed(2)+"px";
+  badge.style.top=(rect.top+rect.height*.50).toFixed(2)+"px";
+  badge.style.transform=isLeft?"translate(0,-50%)":"translate(-100%,-50%)";
   badge.style.backgroundColor=s.direction==="left"?"#fff1d9":"#e2fff0";
   badge.style.color=s.direction==="left"?"#8c4608":"#056844";
   badge.style.borderColor=s.direction==="left"?"#e7a04b":"#45b788";

@@ -1,0 +1,65 @@
+/* HSK Panda V32: contiguous 3D circular wrap, old face on the near side and the next card visible behind. */
+.hsk-cylinder-layout { position: relative; overflow: visible; }
+.flash-layout > .flash-central.hsk-cylinder-card-hidden { visibility: hidden!important; }
+.flash-layout .hsk-cylinder-scene {
+  position: absolute;
+  z-index: 110;
+  perspective: 1250px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  overflow: visible;
+}
+.flash-layout .hsk-cylinder-piece {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+}
+.flash-layout .hsk-cylinder-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-left: 1px solid rgba(5,89,54,.08);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: #eff9f3;
+}
+.flash-layout .hsk-cylinder-viewport::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: rgba(2,52,31,var(--cylinder-shadow,0));
+  pointer-events: none;
+}
+.flash-layout .hsk-cylinder-image {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  box-sizing: border-box;
+  padding: 45px 30px;
+  text-align: center;
+  border-radius: 24px;
+  border: 1px solid #deede2;
+  background: linear-gradient(145deg,#fff,#eaf9ef);
+  pointer-events: none;
+}
+.flash-layout .hsk-cylinder-image .flash-level { position:absolute;top:20px;left:23px; }
+.flash-layout .hsk-cylinder-image .hint { position:absolute;bottom:20px; }
+.flash-layout .hsk-cylinder-image .flash-swipe-tag { display:none!important; }
+.flash-layout .hsk-cylinder-image .hanzi { font-family:'Noto Sans SC',sans-serif; font-size:74px; line-height:1.23; font-weight:600; }
+.flash-layout .hsk-cylinder-image .pinyin { font-size:23px;color:#237f5c; }
+.flash-layout .hsk-cylinder-image .meaning { font-size:19px;font-weight:700; }
+@media(max-width:560px) {
+  .flash-layout .hsk-cylinder-image {padding:44px 20px;}
+  .flash-layout .hsk-cylinder-image .hanzi {font-size:56px;}
+}

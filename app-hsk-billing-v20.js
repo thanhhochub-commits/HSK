@@ -329,7 +329,26 @@ function studyListenSelector(){
   }).join("")+'</div></section>';
 }
 function listenPage(){var l=LISTEN[listenIndex];return head("Luyện nghe & Shadowing 🎧","Nghe câu tiếng Trung, chép lại hoặc đọc theo. Âm thanh dùng giọng đọc trên thiết bị nếu có hỗ trợ tiếng Trung.")+'<div class="exercise-card panel"><span class="pill">Bài '+(listenIndex+1)+' / '+LISTEN.length+'</span><h2>Nghe chép chính tả (Dictation)</h2><p class="hint-text">'+l.hint+'</p><div class="exercise-control">'+button(ic("audio")+" Phát âm thanh","listen","","")+button("Nghe chậm 0,8×","listen",'data-speed="0.8"',"secondary")+button("Bài tiếp theo "+ic("arrow"),"nextlisten","","outline")+'</div><hr class="extra-divider"><p><b>Gõ lại câu tiếng Trung bạn vừa nghe:</b></p><textarea class="field" id="dictationInput" rows="3" placeholder="Viết nội dung nghe được bằng chữ Hán..."></textarea><div class="exercise-control">'+button("Kiểm tra chính tả","checklisten","","")+button("Xem lời thoại","revealListen","","secondary")+button("Luyện Shadowing", "nav",'data-to="pronunciation"',"outline")+'</div><div id="listeningFeedback">'+listenFeedback+'</div></div><div class="notice">Shadowing: nghe câu rồi nói theo nhịp và ngữ điệu. Để tự nghe lại, bạn có thể ghi âm bằng ứng dụng ghi âm trên máy; chấm phát âm tự động chuyên sâu chưa được triển khai.</div>'+studyListenSelector();}
-function pronPage(){var w=studyPracticeWord();return head("Luyện phát âm Pinyin 🎙️","HSK "+state.level+" · Nghe và đọc lại từ mẫu. Nhận dạng đúng chữ không chứng minh thanh điệu chuẩn.")+studyLevelsBar()+'<div class="exercise-card panel speaking-box"><span class="badge">Luyện nói cơ bản</span><div class="exercise-large">'+w.h+'</div><h2>'+w.p+'</h2><p>'+esc(w.v)+'</p><div class="exercise-control" style="justify-content:center">'+button(ic("audio")+" Nghe mẫu","speak",'data-id="'+w.id+'"',"secondary")+button(ic("mic")+" Bắt đầu ghi nhận lời nói","recognize",'data-id="'+w.id+'"',"")+button("Từ tiếp theo","nextPron","","outline")+'</div><div class="feedback" id="pronFeedback">'+(pronResult||"Bấm nghe mẫu, sau đó thử đọc theo. Nếu trình duyệt hỗ trợ nhận dạng, lời nói sẽ hiển thị ở đây.")+'</div></div><div class="notice warning">Bản này chỉ so sánh văn bản được nhận dạng với từ mục tiêu, không chấm điểm khẩu hình, thanh điệu hay độ chuẩn phát âm. Trình duyệt có thể yêu cầu quyền micro và kết nối mạng.</div>';}
+function studySpeakingPrompt(){
+ var prompts=[
+ ["Giới thiệu bản thân và người thân","请介绍你的名字和家人。"],
+ ["Kể về lịch sinh hoạt trong một ngày","请说说你每天的生活。"],
+ ["Kể lại một chuyến du lịch","请介绍一次难忘的旅行。"],
+ ["Trình bày kế hoạch học tập sắp tới","请谈谈你的学习计划。"],
+ ["Nêu quan điểm về lựa chọn nghề nghiệp","你认为选择工作时什么最重要？"],
+ ["Thảo luận về bảo vệ môi trường","你怎样看待经济发展与环境保护的关系？"],
+ ["Đưa ra ý kiến khi đàm phán thương mại","请说明协商在商务谈判中的作用。"],
+ ["So sánh hai giải pháp chính sách","请比较两个政策方案的优点和局限。"],
+ ["Đánh giá lập luận và giới hạn của dữ liệu","请评价一项研究的论证及其局限性。"]
+ ];
+ var p=prompts[(state.level||1)-1]||prompts[0];
+ return '<section class="panel study-selector"><h2>🗣️ Luyện nói mở rộng · Chủ đề HSK '+state.level+'</h2>'
+   +'<p class="small-note">Bài luyện nói do HSK Panda biên soạn. HSKK có cấp và định dạng thi riêng; đây không phải đề HSKK chính thức.</p>'
+   +'<h3>'+esc(p[0])+'</h3><div class="study-pattern">'+esc(p[1])+'</div>'
+   +'<div class="study-shortcuts">'+button("🔊 Nghe câu hỏi","studyPromptSpeak","","secondary")
+   +button("Luyện hội thoại","nav",'data-to="roadmap"',"")+'</div></section>';
+}
+function pronPage(){var w=studyPracticeWord();return head("Luyện phát âm Pinyin 🎙️","HSK "+state.level+" · Nghe và đọc lại từ mẫu. Nhận dạng đúng chữ không chứng minh thanh điệu chuẩn.")+studyLevelsBar()+'<div class="exercise-card panel speaking-box"><span class="badge">Luyện nói cơ bản</span><div class="exercise-large">'+w.h+'</div><h2>'+w.p+'</h2><p>'+esc(w.v)+'</p><div class="exercise-control" style="justify-content:center">'+button(ic("audio")+" Nghe mẫu","speak",'data-id="'+w.id+'"',"secondary")+button(ic("mic")+" Bắt đầu ghi nhận lời nói","recognize",'data-id="'+w.id+'"',"")+button("Từ tiếp theo","nextPron","","outline")+'</div><div class="feedback" id="pronFeedback">'+(pronResult||"Bấm nghe mẫu, sau đó thử đọc theo. Nếu trình duyệt hỗ trợ nhận dạng, lời nói sẽ hiển thị ở đây.")+'</div></div><div class="notice warning">Bản này chỉ so sánh văn bản được nhận dạng với từ mục tiêu, không chấm điểm khẩu hình, thanh điệu hay độ chuẩn phát âm. Trình duyệt có thể yêu cầu quyền micro và kết nối mạng.</div>'+studySpeakingPrompt();}
 function writingPage(){var w=studyPracticeWord();return head("Luyện viết chữ Hán ✍️","HSK "+state.level+" · Tập viết trên khung ô vuông, chưa có nhận diện thứ tự nét.")+studyLevelsBar()+'<div class="two-col"><section class="panel panel-pad"><div class="section-head"><div class="lead">'+ic("pen")+'<h2>Viết theo mẫu</h2></div><span class="badge">Ô chữ 米</span></div><div style="text-align:center"><div class="exercise-large">'+w.h+'</div><b>'+w.p+'</b><p class="hint-text">'+w.v+'</p></div><div class="exercise-control">'+button(ic("audio")+" Nghe đọc","speak",'data-id="'+w.id+'"',"secondary")+button("Chữ tiếp theo","nextWrite","","outline")+'</div><div class="notice">Quan sát chữ mẫu, viết lại nhiều lần. Bạn có thể dùng chuột hoặc màn hình cảm ứng.</div></section><section class="panel panel-pad"><h2 style="margin:0">Bảng luyện viết</h2><canvas class="writing-board" id="writeCanvas" width="420" height="320" aria-label="Bảng viết chữ Hán"></canvas><div class="exercise-control">'+button("Xóa nét","clearCanvas","","secondary")+button(ic("check")+" Đã luyện xong","finishWrite","","")+'</div></section></div>';}
 function grammarPage(){
  var current=state.level||1;
@@ -350,7 +369,7 @@ function grammarPage(){
 }
 
 function grammarQuizPage(){
- var g=GRAMMAR[grammarIndex],answered=grammarChoice>=0,correct=answered&&grammarChoice===g.a;
+ var g=GRAMMAR[grammarIndex];if(billingGate()&&grammarIndex>0&&!g?.free)return premiumNotice(g.title);var answered=grammarChoice>=0,correct=answered&&grammarChoice===g.a;
  return head("Mini quiz ngữ pháp","Chọn câu trả lời để biết đúng hay sai ngay, kèm giải thích dễ hiểu.")
  +'<div class="exercise-card panel"><span class="pill">Bài '+(grammarIndex+1)+' · '+esc(g.title)+'</span><h2>'+esc(g.q)+'</h2>'
  +'<div class="quiz-answers">'+g.opts.map(function(o,i){var cls=answered?(i===g.a?"correct":i===grammarChoice?"wrong":""):"";return '<button class="answer '+cls+'" data-action="grammarAnswer" data-id="'+i+'" '+(answered?'disabled aria-disabled="true"':'')+'><b style="margin-right:7px">'+String.fromCharCode(65+i)+'.</b>'+esc(o)+'</button>';}).join("")+'</div>'
@@ -362,7 +381,7 @@ function examRunning(){
  var q=exam.questions[exam.index],choice=exam.answers[exam.index],answered=choice>=0,correct=answered&&choice===q.a;
  var count=exam.answers.filter(function(a){return a>=0;}).length;
  var right=exam.answers.reduce(function(sum,a,i){return sum+(a>=0&&a===exam.questions[i].a?1:0);},0);
- return head("Luyện đề · Chấm đúng/sai ngay ✓","HSK Panda v1.2 · Chọn đáp án để biết đúng/sai tức thì, nhìn đáp án chuẩn và giải thích trước khi chuyển câu.")
+ return head("Luyện đề · Chấm đúng/sai ngay ✓","Bài tập HSK '+state.level+' tự biên soạn · Chọn đáp án, xem giải thích và chuyển câu.")
  +'<div class="quiz-shell"><div class="quiz-head"><span class="pill">Câu '+(exam.index+1)+' / '+exam.questions.length+' · Đã trả lời '+count+'/'+exam.questions.length+'</span><span class="pill">'+ic("clock")+' <span id="examClock">00:00</span></span></div>'
  +'<div class="bar"><span style="width:'+pct(count,exam.questions.length)+'%"></span></div>'
  +'<section class="panel quiz-question" style="margin-top:16px"><span class="badge">'+esc(q.tag)+'</span><h2>'+esc(q.q)+'</h2>'
@@ -486,7 +505,7 @@ function grammarAnswer(n){
  if(n===g.a && state.grammarDone.indexOf(grammarIndex)<0){state.grammarDone.push(grammarIndex);earn(10);}
  save();render();
 }
-function nextGrammar(){grammarIndex=(grammarIndex+1)%GRAMMAR.length;grammarChoice=-1;render();}
+function nextGrammar(){var next=(grammarIndex+1)%GRAMMAR.length;if(billingGate()&&next>0&&!GRAMMAR[next]?.free){go("pro");return;}grammarIndex=next;grammarChoice=-1;render();}
 function match(n){if(!matching||matching.locked||matching.selected.indexOf(n)>=0)return;var c=matching.cards[n];if(matching.matched.indexOf(c.id)>=0)return;matching.selected.push(n);if(matching.selected.length===2){matching.moves++;matching.locked=true;var a=matching.cards[matching.selected[0]],b=matching.cards[matching.selected[1]];if(a.id===b.id){matching.matched.push(a.id);matching.selected=[];matching.locked=false;earn(5);render();if(matching.matched.length===6)setTimeout(function(){alert("🐼 Hoàn thành! Bạn đã ghép đúng cả 6 cặp.");},80);}else{render();setTimeout(function(){if(matching){matching.selected=[];matching.locked=false;render();}},650);}}else render();}
 function downloadData(){var blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});var link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="hsk-panda-tien-do-"+day()+".json";link.click();setTimeout(function(){URL.revokeObjectURL(link.href);},1000);}
 function importData(file){if(!file)return;var reader=new FileReader();reader.onload=function(){try{var data=JSON.parse(reader.result);if(!data||typeof data!=="object"||!Array.isArray(data.learned)||!Array.isArray(data.results))throw Error("Định dạng không hợp lệ");if(!confirm("Nhập bản sao lưu sẽ thay thế tiến độ hiện tại. Tiếp tục?"))return;state=Object.assign({},seed,data);save();go("home");alert("Đã nhập tiến độ thành công.");}catch(e){alert("Không đọc được dữ liệu hợp lệ: "+e.message);}};reader.readAsText(file);}
@@ -495,6 +514,11 @@ document.addEventListener("change",function(e){if(e.target.id==="vocabLevel"){vo
 document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.classList.contains("flash-central")){e.preventDefault();flipped=!flipped;render();}});
 document.addEventListener("click",function(e){var el=e.target.closest("[data-action]");if(!el)return;var action=el.dataset.action,id=Number(el.dataset.id),to=el.dataset.to;switch(action){
 case "nav":go(to);break;
+case "studyPromptSpeak":{var questions=[
+ "请介绍你的名字和家人。","请说说你每天的生活。","请介绍一次难忘的旅行。","请谈谈你的学习计划。",
+ "你认为选择工作时什么最重要？","你怎样看待经济发展与环境保护的关系？","请说明协商在商务谈判中的作用。",
+ "请比较两个政策方案的优点和局限。","请评价一项研究的论证及其局限性。"];
+ say(questions[(state.level||1)-1]||questions[0]);break;}
 case "studyListen":{var item=STUDY_LESSONS[id];if(!item)break;if(!studyFree(item)){go("pro");break;}listenIndex=originalListenCount+id;listenFeedback="";render();break;}
 case "studyOpen":studyOpenLesson(id);break;
 case "studyAnswer":{

@@ -30,9 +30,9 @@ html.hsk-v38-lock-x{overflow-x:clip!important}
  -webkit-backface-visibility:hidden;backface-visibility:hidden
 }
 .flash-layout .hsk-v38-clip{
- position:absolute;inset:0;overflow:hidden;border-radius:4px;
+ position:absolute;inset:0;overflow:hidden;border-radius:6px;
  background:linear-gradient(145deg,#fff,#eaf9ef);
- box-shadow:0 5px 13px rgba(20,91,57,.17);
+ box-shadow:0 7px 16px rgba(20,91,57,.15),inset 1px 0 3px rgba(255,255,255,.35),inset -2px 0 6px rgba(20,91,57,.08);
  -webkit-backface-visibility:hidden;backface-visibility:hidden
 }
 .flash-layout .hsk-v38-clip::after{

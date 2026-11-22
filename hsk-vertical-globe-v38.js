@@ -1,4 +1,4 @@
-/* HSK Panda V38.6: subtle outer edge badges and soft-focus incoming card, six-ribbon globe.
+/* HSK Panda V38.7: uniform upper-corner badges and soft-focus incoming card, six-ribbon globe.
  * Each band spans the FULL card height; no horizontal slicing.
  * Pointer distance is the primary motion. The following card is visible behind the gaps.
  * The main app keeps tap as a plain answer reveal and handles SRS on committed swipes.
@@ -116,21 +116,15 @@
   var rect=s.card.getBoundingClientRect();
   var isLeft=s.direction==="left";
   badge.textContent=isLeft?"← Chưa nhớ":"Tiếp theo →";
-  // Prefer OUTSIDE the left or right edge. When a narrow mobile viewport
-  // lacks room, dock in the upper side-corner, away from the central hanzi.
-  var vw=document.documentElement.clientWidth||window.innerWidth||rect.right+120;
-  var bw=badge.offsetWidth||(isLeft?108:112);
-  var gap=clamp(rect.width*.021,7,13);
-  var outside=isLeft?(rect.left-gap-bw>=8):(rect.right+gap+bw<=vw-8);
-  var anchorX=isLeft?(outside?rect.left-gap:rect.left+11):
-   (outside?rect.right+gap:rect.right-11);
-  var anchorY=outside?rect.top+rect.height*.50:
-   rect.top+Math.min(54,rect.height*.19);
+  // Consistent on mobile and desktop: badges always stay in the top
+  // LEFT or RIGHT corner, never along the middle-height outside edges.
+  // This is below the small HSK-level tag but above the main Chinese word.
+  var inset=clamp(rect.width*.028,11,20);
+  var anchorX=isLeft?rect.left+inset:rect.right-inset;
+  var anchorY=rect.top+clamp(rect.height*.18,48,63);
   badge.style.left=anchorX.toFixed(2)+"px";
   badge.style.top=anchorY.toFixed(2)+"px";
-  badge.style.transform=isLeft?
-   (outside?"translate(-100%,-50%)":"translate(0,-50%)"):
-   (outside?"translate(0,-50%)":"translate(-100%,-50%)");
+  badge.style.transform=isLeft?"translate(0,-50%)":"translate(-100%,-50%)";
   badge.style.backgroundColor=isLeft?"rgba(255,246,234,.95)":"rgba(235,253,242,.95)";
   badge.style.color=isLeft?"#975416":"#096c4b";
   badge.style.borderColor=isLeft?"rgba(225,157,86,.70)":"rgba(78,176,123,.70)";

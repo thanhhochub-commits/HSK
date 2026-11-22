@@ -1,0 +1,62 @@
+/* HSK Panda V31: continuous mesh-like 3D cylindrical roll on navigation only. */
+.flash-mesh-host { position: relative; overflow: visible; }
+.flash-layout > .flash-central.flash-mesh-hidden { visibility: hidden!important; }
+.flash-layout .flash-mesh-scene {
+  position: absolute;
+  pointer-events: none;
+  z-index: 120;
+  perspective: 960px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+.flash-layout .flash-mesh-piece {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.flash-layout .flash-mesh-face {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: inset 0 0 2px rgba(16, 80, 55, .045);
+}
+.flash-layout .flash-mesh-front::after, .flash-layout .flash-mesh-rear::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 53, 38, var(--mesh-shade, 0));
+  pointer-events: none;
+}
+.flash-layout .flash-mesh-rear { transform: rotateY(180deg); }
+.flash-layout .flash-mesh-content {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 45px 30px;
+  border: 1px solid #deede2;
+  background: linear-gradient(145deg, #fff, #eaf9ef);
+  border-radius: 24px;
+  pointer-events: none;
+}
+.flash-layout .flash-mesh-content .flash-level {position: absolute; top: 20px; left: 23px;}
+.flash-layout .flash-mesh-content .hint {position: absolute; bottom: 20px;}
+.flash-layout .flash-mesh-content .flash-swipe-tag {display: none!important;}
+.flash-layout .flash-mesh-content .hanzi {font-family: 'Noto Sans SC', sans-serif; font-size: 74px; font-weight: 600; line-height: 1.3;}
+.flash-layout .flash-mesh-content .pinyin {font-size: 23px; color: #237f5c;}
+.flash-layout .flash-mesh-content .meaning {font-size: 19px; font-weight: 700;}
+@media (max-width: 560px) {
+  .flash-layout .flash-mesh-content { padding: 44px 20px; }
+  .flash-layout .flash-mesh-content .hanzi {font-size: 56px;}
+}

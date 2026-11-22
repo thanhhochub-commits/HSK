@@ -69,32 +69,19 @@ html.hsk-v38-lock-x{overflow-x:clip!important}
  .flash-layout .flash-central.hsk-v38-card{padding:44px 20px}
 }
 
-/* V38.3: swipe-direction feedback always above the moving 3D fragments. */
-.flash-layout .hsk-v38-feedback{
- position:absolute;inset:0;z-index:220;pointer-events:none;
- overflow:hidden;border-radius:24px;
-}
-.flash-layout .hsk-v38-feedback-label{
- position:absolute;top:51%;display:flex;align-items:center;justify-content:center;
- padding:10px 13px;border-radius:13px;border:2px solid;
- font-family:"Be Vietnam Pro",system-ui,sans-serif;
- font-size:14px;font-weight:800;line-height:1.35;white-space:nowrap;
- box-shadow:0 6px 18px rgba(16,68,43,.13);
- opacity:0;will-change:opacity;
- text-shadow:none;
-}
-.flash-layout .hsk-v38-feedback-left{
- left:16px;color:#9a500d;background:#fff4e1;border-color:#e8a85c;
- transform:translateY(-50%) rotate(-7deg);
-}
-.flash-layout .hsk-v38-feedback-right{
- right:16px;color:#087b57;background:#eafff1;border-color:#57bf91;
- transform:translateY(-50%) rotate(7deg);
+/* V38.4: floating swipe meaning is rendered on document.body, NOT inside
+   the clipped 3D animation viewport. The engine positions and colors it.
+   This selector exists only for display consistency across devices. */
+.hsk-v38-swipe-badge{
+ box-sizing:border-box;
+ -webkit-font-smoothing:antialiased;
+ text-rendering:optimizeLegibility;
+ max-width:calc(100vw - 32px);
 }
 @media(max-width:560px){
- .flash-layout .hsk-v38-feedback-label{
-  padding:8px 10px;border-width:1.5px;font-size:12px;border-radius:11px;
+ .hsk-v38-swipe-badge{
+  font-size:15px!important;
+  padding:9px 14px!important;
+  border-radius:12px!important;
  }
- .flash-layout .hsk-v38-feedback-left{left:8px}
- .flash-layout .hsk-v38-feedback-right{right:8px}
 }

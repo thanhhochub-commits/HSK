@@ -81,9 +81,24 @@
     pieces.push({node:ribbon,clip:clip,side:side,i:i,x:x+pw/2-width/2});
    }
   }
-  viewport.appendChild(stage);layout.appendChild(viewport);
+  // Direction labels live above the 3D scene instead of inside the ribbons.
+  // They cannot disappear behind the openings or become sliced into fragments.
+  var feedback=document.createElement("div");
+  feedback.className="hsk-v38-feedback";
+  feedback.setAttribute("aria-hidden","true");
+  var labelLeft=document.createElement("span");
+  labelLeft.className="hsk-v38-feedback-label hsk-v38-feedback-left";
+  labelLeft.textContent="← Chưa nhớ";
+  var labelRight=document.createElement("span");
+  labelRight.className="hsk-v38-feedback-label hsk-v38-feedback-right";
+  labelRight.textContent="Tiếp theo →";
+  labelLeft.style.opacity="0";
+  labelRight.style.opacity="0";
+  feedback.appendChild(labelLeft);feedback.appendChild(labelRight);
+  viewport.appendChild(stage);viewport.appendChild(feedback);layout.appendChild(viewport);
   scene={card:card,layout:layout,viewport:viewport,stage:stage,orb:orb,
-   back:back,pieces:pieces,count:count,width:width,height:height,
+   back:back,feedbackLeft:labelLeft,feedbackRight:labelRight,
+   pieces:pieces,count:count,width:width,height:height,
    direction:direction,progress:0,dragX:0,status:"drag"};
   draw(scene,0,0);
   return true;
@@ -91,6 +106,13 @@
  function draw(s,p,dx){
   if(!s||!s.viewport.isConnected)return;
   p=clamp(p,0,1);dx=Number(dx)||0;s.progress=p;s.dragX=dx;
+  // Show the gesture meaning during drag and during committed completion.
+  // An incomplete swipe fades the label out as the card springs back.
+  var reveal=smooth((Math.abs(dx)-5)/Math.min(72,s.width*.22));
+  var feedbackOpacity=clamp(.15+.85*reveal,0,1);
+  if(Math.abs(dx)<5)feedbackOpacity=0;
+  s.feedbackLeft.style.opacity=s.direction==="left"?feedbackOpacity.toFixed(3):"0";
+  s.feedbackRight.style.opacity=s.direction==="right"?feedbackOpacity.toFixed(3):"0";
   var sign=s.direction==="left"?-1:1;
   var globe=Math.pow(Math.max(0,Math.sin(Math.PI*p)),.8);
   var rx=s.width*.53,rz=Math.min(s.width*.255,s.height*.42);

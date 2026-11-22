@@ -1,0 +1,87 @@
+/* HSK Panda: 3D segmented rolling flashcard flip */
+.flash-layout .flash-central.flash-roll-playing{
+  isolation:isolate;
+  transform:translateZ(0);
+  cursor:default;
+}
+.flash-layout .flash-roll-overlay{
+  position:absolute;
+  inset:0;
+  z-index:8;
+  pointer-events:none;
+  perspective:1100px;
+  transform-style:preserve-3d;
+  overflow:visible;
+}
+.flash-layout .flash-roll-slice{
+  position:absolute;
+  left:0;
+  width:100%;
+  margin:0;
+  overflow:hidden;
+  transform-origin:50% 0%;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+  will-change:transform,opacity,filter;
+  animation:flash-roll-back 560ms cubic-bezier(.34,.04,.18,1) both;
+  background:linear-gradient(145deg,#fff,#eaf9ef);
+}
+.flash-layout .flash-roll-slice::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:14px;
+  background:linear-gradient(to bottom,transparent,rgba(19,71,52,.12));
+  pointer-events:none;
+}
+.flash-layout .flash-central.flash-roll-face{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0;
+  padding:45px 30px;
+  box-sizing:border-box;
+  border-radius:24px;
+  box-shadow:none;
+  overflow:hidden;
+  pointer-events:none;
+  cursor:default;
+  opacity:1!important;
+  transform:none!important;
+  transition:none!important;
+  will-change:auto;
+}
+.flash-layout .flash-roll-face .flash-swipe-tag{display:none}
+@keyframes flash-roll-back{
+  0%{
+    transform:rotateX(0deg) translate3d(0,0,0);
+    filter:brightness(1);
+    opacity:1;
+  }
+  35%{
+    transform:rotateX(-42deg) translate3d(0,-3px,7px);
+    filter:brightness(.94);
+    opacity:1;
+  }
+  75%{
+    transform:rotateX(-104deg) translate3d(0,-6px,-3px);
+    filter:brightness(.83);
+    opacity:.8;
+  }
+  100%{
+    transform:rotateX(-158deg) translate3d(0,-9px,-12px);
+    filter:brightness(.76);
+    opacity:0;
+  }
+}
+@media(max-width:560px){
+  .flash-layout .flash-central.flash-roll-face{padding:44px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .flash-layout .flash-roll-slice{animation:none!important}
+}

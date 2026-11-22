@@ -1,0 +1,30 @@
+/* HSK Panda v2.1: PDF-derived vocabulary in the existing Từ vựng menu. */
+.hsk-vocab-banner{padding:23px 26px;margin:0 0 20px;background:linear-gradient(112deg,#e7f7ee 0%,#f5fff9 100%);border:1px solid #d7eedf;border-radius:18px}
+.hsk-vocab-banner>span{font-size:10px;font-weight:800;color:#098060;letter-spacing:1px}
+.hsk-vocab-banner h2{margin:7px 0 10px;font-size:22px;color:#0d5d45}
+.hsk-vocab-banner>p{margin:0 0 18px;color:#536f61;font-size:12px;max-width:790px;line-height:1.75}
+.hsk-vocab-level-counts{display:flex;gap:7px;flex-wrap:wrap}
+.hsk-vocab-level-count{display:inline-flex;align-items:center;gap:6px;border:1px solid #d6efe0;background:#fff;border-radius:999px;padding:7px 11px;font-size:11px;color:#23644d}
+.hsk-vocab-level-count b{color:#087f5c;font-size:12px}
+.hsk-vocab-toolbar{margin:5px 0 15px}
+.hsk-vocab-select{max-width:180px!important;min-width:156px}
+.hsk-vocab-notice{font-size:12px;color:#5b7265;padding:13px 16px;background:#f9fcf9;border:1px solid #e1ebe4;border-radius:11px;line-height:1.7;margin:0 0 16px}
+.hsk-vocab-notice b{color:#285943}
+.hsk-vocab-count{font-size:12px;color:#137c5b;font-weight:700;margin:12px 0 16px}
+.hsk-vocab-kind{font-size:11px;color:#6a8275;margin-top:5px;line-height:1.5}
+.hsk-vocab-card{display:flex;flex-direction:column;min-height:214px;padding:18px}
+.hsk-vocab-card .word-mean{line-height:1.7;flex:1}
+.hsk-vocab-card .word-bottom{margin-top:14px}
+.hsk-vocab-card .word-char{font-size:34px;line-height:1.35}
+.hsk-vocab-pages{display:flex;gap:13px;align-items:center;justify-content:center;flex-wrap:wrap;margin:20px 0 14px}
+.hsk-vocab-pages span{font-size:12px;color:#4c7e68}
+.hsk-vocab-credit{font-size:11px;color:#78887d;margin:18px 0;line-height:1.8}
+.hsk-vocab-credit strong{color:#426856}
+@media(max-width:650px){
+.hsk-vocab-banner{padding:19px 16px}
+.hsk-vocab-banner h2{font-size:20px}
+.hsk-vocab-toolbar .search-wrap{width:100%;flex-basis:100%}
+.hsk-vocab-select{flex:1;max-width:none!important}
+.hsk-vocab-card{min-height:185px}
+.hsk-vocab-card .word-char{font-size:31px}
+}

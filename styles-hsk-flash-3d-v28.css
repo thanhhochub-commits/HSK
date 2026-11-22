@@ -68,6 +68,23 @@
  overflow:hidden;
  pointer-events:none;
 }
+.flash-layout .flash-v28-content .hanzi {
+ font-family:"Noto Sans SC",sans-serif;
+ font-size:74px;
+ font-weight:600;
+ line-height:1.25;
+}
+.flash-layout .flash-v28-content .pinyin {
+ font-size:23px;
+ color:#237f5c;
+}
+.flash-layout .flash-v28-content .meaning {
+ font-size:19px;
+ font-weight:700;
+}
+.flash-layout .flash-v28-content .example-line {
+ max-width:100%;
+}
 .flash-layout .flash-v28-content .flash-level {
  position:absolute;
  top:20px;left:23px;
@@ -91,4 +108,5 @@
 }
 @media(max-width:560px) {
  .flash-layout .flash-v28-content {padding:44px 20px;}
+ .flash-layout .flash-v28-content .hanzi {font-size:56px;}
 }

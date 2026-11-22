@@ -1,87 +1,37 @@
-/* HSK Panda: 3D segmented rolling flashcard flip */
-.flash-layout .flash-central.flash-roll-playing{
-  isolation:isolate;
-  transform:translateZ(0);
-  cursor:default;
+/* Flashcard segmented 3D roll, nine visible folding panels */
+.flash-layout > .flash-central.flash-roll-playing{
+ overflow:visible!important;isolation:isolate;transform:none!important;opacity:1!important;pointer-events:none;
 }
 .flash-layout .flash-roll-overlay{
-  position:absolute;
-  inset:0;
-  z-index:8;
-  pointer-events:none;
-  perspective:1100px;
-  transform-style:preserve-3d;
-  overflow:visible;
+ position:absolute;inset:0;z-index:30;perspective:850px;
+ pointer-events:none;transform-style:preserve-3d;border-radius:inherit;
 }
 .flash-layout .flash-roll-slice{
-  position:absolute;
-  left:0;
-  width:100%;
-  margin:0;
-  overflow:hidden;
-  transform-origin:50% 0%;
-  transform-style:preserve-3d;
-  backface-visibility:hidden;
-  will-change:transform,opacity,filter;
-  animation:flash-roll-back 560ms cubic-bezier(.34,.04,.18,1) both;
-  background:linear-gradient(145deg,#fff,#eaf9ef);
+ position:absolute;left:0;width:100%;margin:0;padding:0;
+ box-sizing:border-box;overflow:hidden;background:#eaf9ef;
+ transform-origin:center top;transform-style:preserve-3d;
+ will-change:transform,opacity,filter;
+ animation:flash-roll-pieces 635ms cubic-bezier(.22,.63,.2,1) both;
 }
 .flash-layout .flash-roll-slice::after{
-  content:"";
-  position:absolute;
-  inset:auto 0 0;
-  height:14px;
-  background:linear-gradient(to bottom,transparent,rgba(19,71,52,.12));
-  pointer-events:none;
+ content:"";position:absolute;bottom:0;left:0;right:0;height:12px;
+ background:linear-gradient(transparent,rgba(20,68,48,.23));pointer-events:none;
 }
 .flash-layout .flash-central.flash-roll-face{
-  position:absolute;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  text-align:center;
-  min-height:0!important;
-  max-height:none!important;
-  margin:0;
-  padding:45px 30px;
-  box-sizing:border-box;
-  border-radius:24px;
-  box-shadow:none;
-  overflow:hidden;
-  pointer-events:none;
-  cursor:default;
-  opacity:1!important;
-  transform:none!important;
-  transition:none!important;
-  will-change:auto;
+ position:absolute;display:flex;align-items:center;justify-content:center;
+ flex-direction:column;text-align:center;box-sizing:border-box;
+ min-height:0!important;max-height:none!important;
+ margin:0;padding:45px 30px;background:linear-gradient(145deg,#fff,#eaf9ef);
+ border:0!important;border-radius:24px;box-shadow:none!important;
+ transform:none!important;opacity:1!important;transition:none!important;
+ overflow:hidden;pointer-events:none;cursor:default;
 }
-.flash-layout .flash-roll-face .flash-swipe-tag{display:none}
-@keyframes flash-roll-back{
-  0%{
-    transform:rotateX(0deg) translate3d(0,0,0);
-    filter:brightness(1);
-    opacity:1;
-  }
-  35%{
-    transform:rotateX(-42deg) translate3d(0,-3px,7px);
-    filter:brightness(.94);
-    opacity:1;
-  }
-  75%{
-    transform:rotateX(-104deg) translate3d(0,-6px,-3px);
-    filter:brightness(.83);
-    opacity:.8;
-  }
-  100%{
-    transform:rotateX(-158deg) translate3d(0,-9px,-12px);
-    filter:brightness(.76);
-    opacity:0;
-  }
+.flash-layout .flash-roll-face .flash-swipe-tag{display:none!important}
+@keyframes flash-roll-pieces{
+ 0%{transform:translate3d(0,0,1px) rotateX(0deg);opacity:1;filter:brightness(1)}
+ 30%{transform:translate3d(0,-4px,16px) rotateX(-38deg);opacity:1;filter:brightness(.92)}
+ 70%{transform:translate3d(0,-9px,6px) rotateX(-112deg);opacity:.73;filter:brightness(.75)}
+ 100%{transform:translate3d(0,-12px,-10px) rotateX(-165deg);opacity:0;filter:brightness(.6)}
 }
-@media(max-width:560px){
-  .flash-layout .flash-central.flash-roll-face{padding:44px 20px}
-}
-@media(prefers-reduced-motion:reduce){
-  .flash-layout .flash-roll-slice{animation:none!important}
-}
+@media(max-width:560px){.flash-layout .flash-central.flash-roll-face{padding:44px 20px}}
+@media(prefers-reduced-motion:reduce){.flash-layout .flash-roll-slice{animation:none!important}}

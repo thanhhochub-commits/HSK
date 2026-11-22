@@ -1,0 +1,94 @@
+/* HSK Panda V28. Real, two-sided, nine-piece 3D ribbon animation. */
+.flash-layout > .flash-central.flash-turn-playing {
+ position:relative;
+ isolation:isolate;
+ overflow:visible!important;
+ transform:none!important;
+ opacity:1!important;
+ pointer-events:none;
+ background:linear-gradient(145deg,#e4f6ed,#e1f4e8);
+}
+.flash-layout > .flash-central.flash-turn-playing > :not(.flash-v28-stage) {
+ visibility:hidden!important;
+}
+.flash-layout .flash-v28-stage {
+ position:absolute;
+ inset:0;
+ z-index:80;
+ perspective:880px;
+ transform-style:preserve-3d;
+ pointer-events:none;
+ overflow:visible;
+}
+.flash-layout .flash-v28-piece {
+ position:absolute;
+ left:0;
+ width:100%;
+ padding:0;
+ margin:0;
+ transform-origin:center center;
+ transform-style:preserve-3d;
+ will-change:transform;
+}
+.flash-layout .flash-v28-face {
+ position:absolute;
+ inset:0;
+ overflow:hidden;
+ -webkit-backface-visibility:hidden;
+ backface-visibility:hidden;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ border-bottom:1px solid rgba(53,126,80,.21);
+ box-shadow:0 7px 12px rgba(12,81,57,.19),inset 0 -2px 3px rgba(18,71,46,.15);
+}
+.flash-layout .flash-v28-face.back {
+ transform:rotateX(180deg);
+ background:linear-gradient(145deg,#eefaf2,#fff);
+}
+.flash-layout .flash-v28-face.front::after {
+ content:"";
+ position:absolute;
+ bottom:0;left:0;right:0;height:8px;
+ background:linear-gradient(transparent,rgba(14,85,54,.2));
+ pointer-events:none;
+}
+.flash-layout .flash-v28-content {
+ position:absolute;
+ left:0;
+ width:100%;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ box-sizing:border-box;
+ gap:8px;
+ margin:0;
+ padding:45px 30px;
+ background:linear-gradient(145deg,#fff,#eaf9ef);
+ overflow:hidden;
+ pointer-events:none;
+}
+.flash-layout .flash-v28-content .flash-level {
+ position:absolute;
+ top:20px;left:23px;
+}
+.flash-layout .flash-v28-content .hint {
+ position:absolute;
+ bottom:20px;
+}
+.flash-layout .flash-v28-content .flash-swipe-tag {
+ display:none!important;
+}
+.flash-layout .flash-v28-piece.flash-v28-css-fallback {
+ animation:flash-v28-fallback-keyframes 720ms cubic-bezier(.2,.65,.2,1) both;
+}
+@keyframes flash-v28-fallback-keyframes {
+ 0%{transform:translate3d(0,0,0) rotateX(0deg) scaleY(1)}
+ 20%{transform:translate3d(4px,-3px,24px) rotateX(-23deg) scaleY(.92)}
+ 47%{transform:translate3d(24px,-9px,125px) rotateX(-88deg) scaleY(.69)}
+ 73%{transform:translate3d(12px,-7px,82px) rotateX(-142deg) scaleY(.83)}
+ 100%{transform:translate3d(0,0,0) rotateX(-180deg) scaleY(1)}
+}
+@media(max-width:560px) {
+ .flash-layout .flash-v28-content {padding:44px 20px;}
+}
